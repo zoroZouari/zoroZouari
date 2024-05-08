@@ -62,15 +62,14 @@ class _ModifCkState extends State<ModifMission> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_idMission != null)
             Text(
-              'ID Mission : $_idMission}',
-                style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF112F33),
-              ),
+            'ID Mission : $_idMission}',
+              style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF112F33),
             ),
+          ),
             SizedBox(height: 16),
             TextField(
               controller: TextEditingController(text: _typeMission.toString()),

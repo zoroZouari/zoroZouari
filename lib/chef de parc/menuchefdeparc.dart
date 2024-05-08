@@ -12,24 +12,33 @@ class CustomBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Action à effectuer lorsque le CustomBox est cliqué
+      onTap: onTap,
       child: Container(
+        width: MediaQuery.of(context).size.width * 0.4, // Définir la largeur à 40% de la largeur de l'écran
         decoration: BoxDecoration(
-          color: Colors.lightBlueAccent, // Couleur jaune
-          borderRadius: BorderRadius.circular(20), // Border radius arrondi
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromARGB(255, 77, 113, 137), // Couleur du shadow
+              blurRadius: 10,
+              offset: Offset(0, 3),
+            ),
+          ],
         ),
-        padding: EdgeInsets.all(16), // Espacement intérieur
+        padding: EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 60), // Icône au centre
-            SizedBox(height: 10), // Espacement entre l'icône et le texte
+            Icon(icon, size: 60),
+            SizedBox(height: 10),
             Text(
               text,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                ), // Style du texte
+              ),
+              textAlign: TextAlign.center, // Alignement du texte au centre
             ),
           ],
         ),
@@ -38,16 +47,28 @@ class CustomBox extends StatelessWidget {
   }
 }
 
-class MenuChefDeParc extends StatelessWidget {
+class MenuChefDeParc extends StatefulWidget {
   const MenuChefDeParc({Key? key}) : super(key: key);
+
+  @override
+  _MenuChefDeParcState createState() => _MenuChefDeParcState();
+}
+
+class _MenuChefDeParcState extends State<MenuChefDeParc> {
+  bool showMenu = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Color(0xFFDDECED),
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
-        child: SizedBox.expand(
+      body: GestureDetector(
+        onTap: () {
+          setState(() {
+            showMenu = !showMenu;
+          });
+        },
+        child: Container(
+          color: Color(0xFFDDECED),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
           child: Stack(
             children: [
               //avatar in the top left corner
@@ -59,43 +80,67 @@ class MenuChefDeParc extends StatelessWidget {
                   backgroundImage: AssetImage('assets/logos/chef.jpg'),
                 ),
               ),
-              Column(
-                children: [
-                  SizedBox(height: 60), // Espacement entre le CircleAvatar et la grille des icônes
-                  Expanded(
-                    child: GridView.count(
-                      crossAxisCount: 2, // Nombre de colonnes dans la grille
-                      crossAxisSpacing: 20, // Espacement horizontal entre les éléments
-                      mainAxisSpacing: 20, // Espacement vertical entre les éléments
-                      children: [
-                        // Première icône - Check List
-                        CustomBox(
-                          icon: Icons.checklist_rtl_sharp,
-                          text: 'Check List',
-                          onTap: () {
-                            Navigator.pushNamed(context, AppRoutes.menu_ck);
+              if (showMenu)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 45),
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 20,
+                        child: IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            // Action à effectuer lorsque l'icône de modification de profil est cliquée
                           },
                         ),
-                        // Deuxième icône - Ordre Réparation
-                        CustomBox(
-                          icon: Icons.car_crash_outlined,
-                          text: 'Ordre Réparation',
-                          onTap: () {
-                            Navigator.pushNamed(context, AppRoutes.historique_ordre);
+                      ),
+                      SizedBox(height: 10),
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 20,
+                        child: IconButton(
+                          icon: Icon(Icons.logout),
+                          onPressed: () {
+                            // Action à effectuer lorsque l'icône de déconnexion est cliquée
+                             Navigator.pushNamed(context, AppRoutes.login_page);
                           },
                         ),
-                        // Troisième icône - Mission
-                        CustomBox(
-                          icon: Icons.add_road_sharp,
-                          text: 'Mission',
-                          onTap: () {
-                            Navigator.pushNamed(context, AppRoutes.menu_mission);
-                          },
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomBox(
+                      icon: Icons.checklist_rtl_sharp,
+                      text: 'Check List',
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.menu_ck);
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    CustomBox(
+                      icon: Icons.car_crash_outlined,
+                      text: 'Ordre Réparation',
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.historique_ordre);
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    CustomBox(
+                      icon: Icons.add_road_sharp,
+                      text: 'Mission',
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.menu_mission);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

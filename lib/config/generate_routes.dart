@@ -20,10 +20,9 @@ import 'package:firstparc/config/app_routes.dart';
 import 'package:firstparc/login/login_page.dart';
 import 'package:flutter/material.dart';
 
-class generateRoute {
-  Route<dynamic>? onGenerateRoute(RouteSettings routeSettings){
+class GenerateRoute {
+   Route<dynamic>? onGenerateRoute(RouteSettings routeSettings){
     switch(routeSettings.name){
-      
       case AppRoutes.login_page:
        return MaterialPageRoute(builder: (context) => const LoginPage());
        //////////////// Chef De Parc /////////////////////////////////////
@@ -111,5 +110,6 @@ class generateRoute {
        return MaterialPageRoute(builder: (context)=>  const Ck1());
      
   }
+    return null;
   }
   }

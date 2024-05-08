@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'FirstParc',
       onGenerateRoute: (RouteSettings)=>
-      generateRoute().onGenerateRoute(RouteSettings),
+      GenerateRoute().onGenerateRoute(RouteSettings),
       
     );
   }
