@@ -30,4 +30,12 @@ class AppRoutes {
   ///////////////////////////// Profil Page /////////////////////////////////
   static const String profil_page = '/profil_page';
 
+  ////////////////////////////   Admin //////////////////////////////////////// 
+  static const String menuAdmin = '/menuAdmin';
+  static const String liste_chauffs = '/liste_chauffs';
+  static const String liste_chefs = '/liste_chefs';
+  static const String liste_mecs = '/liste_mecs';
+  static const String creation_user = '/creation_user';
+
+
 }

@@ -1,5 +1,10 @@
 
 
+import 'package:firstparc/Admin/Liste%20Perso/liste_chauffs.dart';
+import 'package:firstparc/Admin/Liste%20Perso/liste_chefs.dart';
+import 'package:firstparc/Admin/Liste%20Perso/liste_mecs.dart';
+import 'package:firstparc/Admin/creation_user.dart';
+import 'package:firstparc/Admin/menuAdmin.dart';
 import 'package:firstparc/Chauffeur/dem_intervention.dart';
 import 'package:firstparc/Chauffeur/dem_saisi.dart';
 import 'package:firstparc/Chauffeur/menuChauffeur.dart';
@@ -113,6 +118,21 @@ class GenerateRoute {
        /////////////////////////////  Profil Page /////////////////////////////
        case AppRoutes.profil_page:
        return MaterialPageRoute(builder: (context)=>   ProfilePage());
+       /////////////////////////////  Admin //////////////////////////////////   Admin
+       case AppRoutes.menuAdmin:
+       return MaterialPageRoute(builder: (context)=>   MenuAdmin());
+
+       case AppRoutes.liste_chauffs:
+       return MaterialPageRoute(builder: (context)=>   ListeChauffs());
+
+       case AppRoutes.liste_chefs:
+       return MaterialPageRoute(builder: (context)=>   ListeChefs());
+
+       case AppRoutes.liste_mecs:
+       return MaterialPageRoute(builder: (context)=>   ListeMecs());
+
+       case AppRoutes.creation_user:
+       return MaterialPageRoute(builder: (context)=>   CreationUser());
      
   }
     return null;
