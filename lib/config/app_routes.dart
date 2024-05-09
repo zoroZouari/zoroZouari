@@ -27,5 +27,7 @@ class AppRoutes {
   /////////////////////////// Ck ////////////////////////////////
   static const String cK = '/cK';
   static const String cK1 = '/cK1';
+  ///////////////////////////// Profil Page /////////////////////////////////
+  static const String profil_page = '/profil_page';
 
 }

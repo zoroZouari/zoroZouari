@@ -91,9 +91,11 @@ class _MenuChefDeParcState extends State<MenuChefDeParc> {
                         backgroundColor: Colors.white,
                         radius: 20,
                         child: IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: Icon(Icons.edit), // icone de modif profil
                           onPressed: () {
                             // Action à effectuer lorsque l'icône de modification de profil est cliquée
+                            Navigator.pushNamed(context,
+                             AppRoutes.profil_page,);
                           },
                         ),
                       ),
@@ -102,7 +104,7 @@ class _MenuChefDeParcState extends State<MenuChefDeParc> {
                         backgroundColor: Colors.white,
                         radius: 20,
                         child: IconButton(
-                          icon: Icon(Icons.logout),
+                          icon: Icon(Icons.logout), // icone pour se déconnecter
                           onPressed: () {
                             // Action à effectuer lorsque l'icône de déconnexion est cliquée
                              Navigator.pushNamed(context, AppRoutes.login_page);

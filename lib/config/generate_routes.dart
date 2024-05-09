@@ -18,6 +18,7 @@ import 'package:firstparc/chef%20de%20parc/ordre_rep/ordre_valide.dart';
 import 'package:firstparc/chef%20de%20parc/ordre_rep/valider_ordre.dart';
 import 'package:firstparc/config/app_routes.dart';
 import 'package:firstparc/login/login_page.dart';
+import 'package:firstparc/profil_page.dart';
 import 'package:flutter/material.dart';
 
 class GenerateRoute {
@@ -108,6 +109,10 @@ class GenerateRoute {
       ));
       case AppRoutes.cK1:
        return MaterialPageRoute(builder: (context)=>  const Ck1());
+
+       /////////////////////////////  Profil Page /////////////////////////////
+       case AppRoutes.profil_page:
+       return MaterialPageRoute(builder: (context)=>   ProfilePage());
      
   }
     return null;
