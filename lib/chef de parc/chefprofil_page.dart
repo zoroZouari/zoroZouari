@@ -1,12 +1,12 @@
 import 'package:firstparc/config/app_routes.dart';
 import 'package:flutter/material.dart';
 
-class ProfilePage extends StatefulWidget {
+class ChefProfilePage extends StatefulWidget {
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ChefProfilePageState createState() => _ChefProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ChefProfilePageState extends State<ChefProfilePage> {
   final _prenomUserController = TextEditingController();
   final _nomUserController = TextEditingController();
   final _loginUserController = TextEditingController();
@@ -87,7 +87,7 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.only(left: 100, right:100),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.adminprofil_modifie);
+                   Navigator.pushNamed(context, AppRoutes.chefprofil_modifie);
               
                   // Do something with the input values
                   

@@ -3,8 +3,12 @@
 import 'package:firstparc/Admin/Liste%20Perso/liste_chauffs.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_chefs.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_mecs.dart';
+import 'package:firstparc/Admin/Liste%20Perso/adminprofil_modifie.dart';
+import 'package:firstparc/Admin/Liste%20Perso/profil_pageAdmin.dart';
 import 'package:firstparc/Admin/creation_user.dart';
 import 'package:firstparc/Admin/menuAdmin.dart';
+import 'package:firstparc/Chauffeur/chauff_profilModifie.dart';
+import 'package:firstparc/Chauffeur/chauff_profilPage.dart';
 import 'package:firstparc/Chauffeur/dem_intervention.dart';
 import 'package:firstparc/Chauffeur/dem_saisi.dart';
 import 'package:firstparc/Chauffeur/menuChauffeur.dart';
@@ -17,12 +21,14 @@ import 'package:firstparc/chef%20de%20parc/Mission/mission_affecte.dart';
 import 'package:firstparc/chef%20de%20parc/Mission/mission_form.dart';
 import 'package:firstparc/chef%20de%20parc/Mission/mission_modifie.dart';
 import 'package:firstparc/chef%20de%20parc/Mission/modif_mission.dart';
+import 'package:firstparc/chef%20de%20parc/chefprofil_modifie.dart';
 import 'package:firstparc/chef%20de%20parc/menuchefdeparc.dart';
 import 'package:firstparc/chef%20de%20parc/ordre_rep/historique_ordre.dart';
 import 'package:firstparc/chef%20de%20parc/ordre_rep/ordre_valide.dart';
 import 'package:firstparc/chef%20de%20parc/ordre_rep/valider_ordre.dart';
 import 'package:firstparc/config/app_routes.dart';
 import 'package:firstparc/login/login_page.dart';
+import 'package:firstparc/chef%20de%20parc/chefprofil_page.dart';
 import 'package:firstparc/profil_page.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +37,7 @@ class GenerateRoute {
     switch(routeSettings.name){
       case AppRoutes.login_page:
        return MaterialPageRoute(builder: (context) => const LoginPage());
-       //////////////// Chef De Parc /////////////////////////////////////
+       //////////////// Chef De Parc /////////////////////////////////////////////////  CHEF DE PARC
       case AppRoutes.menuchefdeparc:
        return MaterialPageRoute(builder: (context) => const MenuChefDeParc());
        /*
@@ -68,16 +74,20 @@ class GenerateRoute {
        */
        case AppRoutes.mission_form:
        return MaterialPageRoute(builder: (context) => const MissionForm());
+
        case AppRoutes.menu_mission:
        return MaterialPageRoute(builder: (context) => const MenuMission());
+
        case AppRoutes.mission_affecte:
        return MaterialPageRoute(builder: (context) => const MissionAffecte());
+
        case AppRoutes.historique_mission:
        return MaterialPageRoute(builder: (context) => const HistoriqueMission());
+
        case AppRoutes.mission_modifie:
        return MaterialPageRoute(builder: (context) => const MissionModifie());
+
        case AppRoutes.modif_mission:
-       
        return MaterialPageRoute(builder: (context) =>  ModifMission(
         idMission: 1,
         typeMission: 'Type Mission',
@@ -88,19 +98,37 @@ class GenerateRoute {
         LieuDeDechargement: 'Lieu2',
         client: 'client1',
        ));
+
        case AppRoutes.historique_ordre:
        return MaterialPageRoute(builder: (context) => const HistoriqueOrdre());
+
        case AppRoutes.valider_ordre:
        return MaterialPageRoute(builder: (context) => const ValiderOrdre());
+
        case AppRoutes.ordre_valide:
        return MaterialPageRoute(builder: (context) => const OrdreValide());
+
+       case AppRoutes.chefprofil_page:
+       return MaterialPageRoute(builder: (context) =>  ChefProfilePage());
+
+        case AppRoutes.chefprofil_modifie:
+       return MaterialPageRoute(builder: (context) => const ChefProfilModifie());
        ////////////      CHAUFFEUR    //////////////////////
        case AppRoutes.menuChauffeur:
        return MaterialPageRoute(builder: (context) => const MenuChauffeur());
+
        case AppRoutes.dem_Intervention:
        return MaterialPageRoute(builder: (context) => const DemIntervention());
+
        case AppRoutes.dem_saisi:
        return MaterialPageRoute(builder: (context) => const DemSaisi());
+
+       case AppRoutes.chauff_profilPage:
+       return MaterialPageRoute(builder: (context) =>  ChauffProfilePage());
+
+       case AppRoutes.chauff_profilModifie:
+       return MaterialPageRoute(builder: (context) =>   const ChaufProfilModifie());
+
        /*
        case AppRoutes.mission_chauffeur:
        return MaterialPageRoute(builder: (context) =>  MissionChauffeur());
@@ -120,19 +148,25 @@ class GenerateRoute {
        return MaterialPageRoute(builder: (context)=>   ProfilePage());
        /////////////////////////////  Admin //////////////////////////////////   Admin
        case AppRoutes.menuAdmin:
-       return MaterialPageRoute(builder: (context)=>   MenuAdmin());
+       return MaterialPageRoute(builder: (context)=>  const  MenuAdmin());
 
        case AppRoutes.liste_chauffs:
-       return MaterialPageRoute(builder: (context)=>   ListeChauffs());
+       return MaterialPageRoute(builder: (context)=>  const  ListeChauffs());
 
        case AppRoutes.liste_chefs:
-       return MaterialPageRoute(builder: (context)=>   ListeChefs());
+       return MaterialPageRoute(builder: (context)=>  const   ListeChefs());
 
        case AppRoutes.liste_mecs:
-       return MaterialPageRoute(builder: (context)=>   ListeMecs());
+       return MaterialPageRoute(builder: (context)=>  const  ListeMecs());
 
        case AppRoutes.creation_user:
-       return MaterialPageRoute(builder: (context)=>   CreationUser());
+       return MaterialPageRoute(builder: (context)=>   const CreationUser());
+
+       case AppRoutes.profil_pageAdmin:
+       return MaterialPageRoute(builder: (context)=>    ProfilePageAdmin());
+
+       case AppRoutes.adminprofil_modifie:
+       return MaterialPageRoute(builder: (context)=>   const AdminProfilModifie());
      
   }
     return null;

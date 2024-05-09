@@ -1,12 +1,12 @@
 import 'package:firstparc/config/app_routes.dart';
 import 'package:flutter/material.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePageAdmin extends StatefulWidget {
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfilePageAdminState createState() => _ProfilePageAdminState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageAdminState extends State<ProfilePageAdmin> {
   final _prenomUserController = TextEditingController();
   final _nomUserController = TextEditingController();
   final _loginUserController = TextEditingController();

@@ -18,12 +18,16 @@ class AppRoutes {
   static const String historique_ordre = '/historique_ordre';
   static const String valider_ordre = '/valider_ordre';
   static const String ordre_valide = '/ordre_valide';
+  static const String chefprofil_page = '/chefprofil_page';
+  static const String chefprofil_modifie = '/chefprofil_modifie';
 
   /////////////////////////////  Chauffeur ////////////////////
   static const String menuChauffeur = '/menuChauffeur';
   static const String dem_Intervention = '/dem_Intervention';
   static const String dem_saisi = '/dem_saisi';
   static const String mission_chauffeur = '/mission_chauffeur';
+  static const String chauff_profilPage = '/chauff_profilPage';
+  static const String chauff_profilModifie = '/chauff_profilModifie';
   /////////////////////////// Ck ////////////////////////////////
   static const String cK = '/cK';
   static const String cK1 = '/cK1';
@@ -36,6 +40,8 @@ class AppRoutes {
   static const String liste_chefs = '/liste_chefs';
   static const String liste_mecs = '/liste_mecs';
   static const String creation_user = '/creation_user';
+  static const String profil_pageAdmin = '/profil_pageAdmin';
+  static const String adminprofil_modifie = '/adminprofil_modifie';
 
 
 }

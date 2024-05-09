@@ -59,7 +59,7 @@ class MenuChauffeur extends StatelessWidget {
                       icon: Icon(Icons.edit), // icone de modif profil
                       onPressed: () {
                         // Action à effectuer lorsque l'icône de modification de profil est cliquée
-                        Navigator.pushNamed(context, AppRoutes.profil_page);
+                        Navigator.pushNamed(context, AppRoutes.chauff_profilPage);
                       },
                     ),
                   ),
