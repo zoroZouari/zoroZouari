@@ -25,9 +25,10 @@ class AppRoutes {
   static const String menuChauffeur = '/menuChauffeur';
   static const String dem_Intervention = '/dem_Intervention';
   static const String dem_saisi = '/dem_saisi';
-  static const String mission_chauffeur = '/mission_chauffeur';
+  static const String chauff_mission = '/chauff_mission';
   static const String chauff_profilPage = '/chauff_profilPage';
   static const String chauff_profilModifie = '/chauff_profilModifie';
+  static const String validerMissionChauff = '/validerMissionChauff';
   /////////////////////////// Ck ////////////////////////////////
   static const String cK = '/cK';
   static const String cK1 = '/cK1';
@@ -42,6 +43,12 @@ class AppRoutes {
   static const String creation_user = '/creation_user';
   static const String profil_pageAdmin = '/profil_pageAdmin';
   static const String adminprofil_modifie = '/adminprofil_modifie';
+  static const String user_cree = '/user_cree';
+  ///////////////////////////////    Mécanicien /////////////////////////////////////////    Mécanicien 
+  static const String mec_mission = '/mec_mission';
+  static const String validermissionMec =  '/validermissionMec';
+  static const String procederMission =  '/procederMission';
+  static const String mecprofil_page =  '/mecprofil_page';
 
 
 }

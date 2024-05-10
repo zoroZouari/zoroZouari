@@ -1,19 +1,26 @@
 
 
+import 'package:firstparc/Admin/Cr%C3%A9ation%20User/user_cree.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_chauffs.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_chefs.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_mecs.dart';
 import 'package:firstparc/Admin/Liste%20Perso/adminprofil_modifie.dart';
 import 'package:firstparc/Admin/Liste%20Perso/profil_pageAdmin.dart';
-import 'package:firstparc/Admin/creation_user.dart';
+import 'package:firstparc/Admin/Cr%C3%A9ation%20User/creation_user.dart';
 import 'package:firstparc/Admin/menuAdmin.dart';
+import 'package:firstparc/Chauffeur/chauff_mission.dart';
 import 'package:firstparc/Chauffeur/chauff_profilModifie.dart';
 import 'package:firstparc/Chauffeur/chauff_profilPage.dart';
 import 'package:firstparc/Chauffeur/dem_intervention.dart';
 import 'package:firstparc/Chauffeur/dem_saisi.dart';
 import 'package:firstparc/Chauffeur/menuChauffeur.dart';
+import 'package:firstparc/Chauffeur/validerMissionChauff.dart';
 import 'package:firstparc/Checklist/cK.dart';
 import 'package:firstparc/Checklist/cK1.dart';
+import 'package:firstparc/M%C3%A9canicien/mec_mission.dart';
+import 'package:firstparc/M%C3%A9canicien/mecprofil_page.dart';
+import 'package:firstparc/M%C3%A9canicien/procederMission.dart';
+import 'package:firstparc/M%C3%A9canicien/validermissionMec.dart';
 
 import 'package:firstparc/chef%20de%20parc/Mission/historique_mission.dart';
 import 'package:firstparc/chef%20de%20parc/Mission/menu_mission.dart';
@@ -36,7 +43,7 @@ class GenerateRoute {
    Route<dynamic>? onGenerateRoute(RouteSettings routeSettings){
     switch(routeSettings.name){
       case AppRoutes.login_page:
-       return MaterialPageRoute(builder: (context) => const LoginPage());
+       return MaterialPageRoute(builder: (context) =>  LoginPage());
        //////////////// Chef De Parc /////////////////////////////////////////////////  CHEF DE PARC
       case AppRoutes.menuchefdeparc:
        return MaterialPageRoute(builder: (context) => const MenuChefDeParc());
@@ -129,10 +136,13 @@ class GenerateRoute {
        case AppRoutes.chauff_profilModifie:
        return MaterialPageRoute(builder: (context) =>   const ChaufProfilModifie());
 
-       /*
-       case AppRoutes.mission_chauffeur:
-       return MaterialPageRoute(builder: (context) =>  MissionChauffeur());
-       */
+       
+       case AppRoutes.chauff_mission:
+       return MaterialPageRoute(builder: (context) =>  ChauffMission());
+
+       case AppRoutes.validerMissionChauff:
+       return MaterialPageRoute(builder: (context) =>  ValiderMissionChauff());
+       
        
 
       ////////////////////////////////  CK ////////////////////////////////////
@@ -167,6 +177,22 @@ class GenerateRoute {
 
        case AppRoutes.adminprofil_modifie:
        return MaterialPageRoute(builder: (context)=>   const AdminProfilModifie());
+
+       case AppRoutes.user_cree:
+       return MaterialPageRoute(builder: (context)=>   const UserCree());
+
+       //////////////////////  Mécanicien  ////////////////////////////////////////////////// Mécanicien 
+        case AppRoutes.mec_mission:
+       return MaterialPageRoute(builder: (context)=>   const MecMission ());
+
+        case AppRoutes.validermissionMec:
+       return MaterialPageRoute(builder: (context)=>    ValiderMissionMec ());
+
+        case AppRoutes.procederMission:
+       return MaterialPageRoute(builder: (context)=>    ProcederMission ());
+
+        case AppRoutes.mecprofil_page:
+       return MaterialPageRoute(builder: (context)=>    MecProfilePage ());
      
   }
     return null;

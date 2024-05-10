@@ -32,7 +32,7 @@ class DropVersionState extends State<DropVersion> {
     super.initState();
     // Écoute les changements de codeT et codeType et appelle fetchVersions lorsque les deux sont non nuls
    //if (widget.codeT != null && widget.codeType != null) {
-    
+    fetchVersions();
      
    //}
   }
@@ -41,8 +41,8 @@ class DropVersionState extends State<DropVersion> {
   Future<void> fetchVersions() async {
    
     //var url = Uri.parse('https://localhost:7116/api/CkEnteteFiches/${widget.codeT}/${widget.codeType}');
-    var url = Uri.parse('https://10.0.2.2:7116/api/CkEnteteFiches/${widget.codeT}/${widget.codeType}');
-    //var url = Uri.parse('https://10.0.2.2:7116/api/CkEnteteFiches/1/1');
+    //var url = Uri.parse('https://10.0.2.2:7116/api/CkEnteteFiches/${widget.codeT}/${widget.codeType}');
+    var url = Uri.parse('https://10.0.2.2:7116/api/CkEnteteFiches/1/1');
     print(url);
 
     try {
@@ -77,7 +77,7 @@ class DropVersionState extends State<DropVersion> {
         value: null, // La valeur sélectionnée initialement, null ou une valeur par défaut
         onChanged: (value) {
           
-             fetchVersions();
+             
             final selectedVersion = value!.version.toString();
             widget.onCodeChanged(selectedVersion);
             
