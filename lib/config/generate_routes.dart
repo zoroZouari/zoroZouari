@@ -15,6 +15,9 @@ import 'package:firstparc/Chauffeur/menuChauffeur.dart';
 import 'package:firstparc/Chauffeur/validerMissionChauff.dart';
 import 'package:firstparc/Checklist/cK.dart';
 import 'package:firstparc/Checklist/cK1.dart';
+import 'package:firstparc/Checklist/ck_soumis.dart';
+import 'package:firstparc/Checklist/historique_ck.dart';
+import 'package:firstparc/Checklist/menu_ck.dart';
 import 'package:firstparc/M%C3%A9canicien/mec_mission.dart';
 import 'package:firstparc/M%C3%A9canicien/mecprofil_page.dart';
 import 'package:firstparc/M%C3%A9canicien/procederMission.dart';
@@ -162,7 +165,14 @@ class GenerateRoute {
         codetype: args['selectedType'],
         ));
 
+       case AppRoutes.menu_ck:
+        return MaterialPageRoute(builder: (context)=> const  MenuCk());
 
+       case AppRoutes.historique_ck:
+        return MaterialPageRoute(builder: (context)=> const  HistoriqueCk());
+
+       case AppRoutes.ck_soumis:
+        return MaterialPageRoute(builder: (context)=> const  CkSoumis());
 
 
        /////////////////////////////  Profil Page /////////////////////////////

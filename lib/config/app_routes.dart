@@ -2,11 +2,11 @@ class AppRoutes {
   static const String login_page = '/';
   ///////////////////// Chef De Parc ///////////////////////////
   static const String menuchefdeparc = '/menuchefdeparc';
-  static const String menu_ck = '/menu_ck';
+
   static const String configck = '/configck';
   static const String fiche_ck = '/fiche_ck';
-  static const String ck_soumis = '/ck_soumis';
-  static const String historique_ck = '/historique_ck';
+
+ 
   static const String modif_ck = '/modif_ck';
   static const String ck_modifie = '/ck_modifie';
   static const String mission_form = '/mission_form';
@@ -32,6 +32,10 @@ class AppRoutes {
   /////////////////////////// Ck ////////////////////////////////
   static const String cK = '/cK';
   static const String cK1 = '/cK1';
+  static const String menu_ck = '/menu_ck';
+  static const String ck_soumis =  '/ck_soumis';
+  static const String historique_ck = '/historique_ck';
+
   ///////////////////////////// Profil Page /////////////////////////////////
   static const String profil_page = '/profil_page';
 
