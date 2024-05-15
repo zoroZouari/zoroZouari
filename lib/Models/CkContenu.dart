@@ -1,14 +1,14 @@
 class CkContenu {
 
  
- final int codeType;
+ 
  final String designation;
- final String codeC;
+ final int codeC;
 
  CkContenu ({
 
   
-  required this.codeType,
+  
   required this.designation,
   required this.codeC,
   
@@ -16,12 +16,10 @@ class CkContenu {
  });
 factory CkContenu.fromJson(Map<String, dynamic> json){
 String designation = json['designation'] ?? '';
-int codeType = json['codeType'] ?? '';
-String codeC = json['codeC'] ?? '';
+int codeC = json['codeC'] ?? '';
 
 return CkContenu(
-  designation: designation, 
-  codeType: codeType, 
+  designation: designation,  
   codeC : codeC,
 
   );

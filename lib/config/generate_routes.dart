@@ -1,5 +1,3 @@
-
-
 import 'package:firstparc/Admin/Cr%C3%A9ation%20User/user_cree.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_chauffs.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_chefs.dart';
@@ -149,9 +147,23 @@ class GenerateRoute {
       case AppRoutes.cK:
       return MaterialPageRoute(builder: (context) =>  Ck(
         date: DateTime.now().toString(),
+        codeT: null, codeType: null
       ));
+      
       case AppRoutes.cK1:
-       return MaterialPageRoute(builder: (context)=>  const Ck1());
+ final args = routeSettings.arguments as Map<String, dynamic>;
+       return MaterialPageRoute(builder: (context)=>   Ck1(
+        date: args['widget.date'],
+        version: args['selectedVersion'], 
+        remorque: args['selectedRemorque'],
+        vehicule: args['selectedVehicule'],
+        titre: args['selectedTitreDesignation'],
+        codet: args['selectedTitre'],
+        codetype: args['selectedType'],
+        ));
+
+
+
 
        /////////////////////////////  Profil Page /////////////////////////////
        case AppRoutes.profil_page:

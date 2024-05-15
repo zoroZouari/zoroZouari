@@ -26,16 +26,9 @@ class DropVersion extends StatefulWidget {
 class DropVersionState extends State<DropVersion> {
  
   List<CkEnteteFiche> versions = []; // Liste des versions
+ 
 
-  @override
-  void initState() {
-    super.initState();
-    // Écoute les changements de codeT et codeType et appelle fetchVersions lorsque les deux sont non nuls
-   //if (widget.codeT != null && widget.codeType != null) {
-    fetchVersions();
-     
-   //}
-  }
+  
 
   // Fonction pour récupérer les versions depuis l'API en fonction de codeT et codeType
   Future<void> fetchVersions() async {
