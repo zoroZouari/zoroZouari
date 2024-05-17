@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:firstparc/Models/CkLigneFiche.dart';
 import 'package:firstparc/Models/CkSousTitre.dart';
-import 'package:firstparc/Models/CkContenu.dart';
 import 'package:firstparc/config/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,22 +8,27 @@ import 'package:intl/intl.dart';
 
 class Ck1 extends StatefulWidget {
   final String date;
+ String time;
   String version;
   final String remorque;
   final String vehicule;
   final String titre;
+  final String executant;
   String codet;
   String codetype;
-
+  int codeCk;
   Ck1({
     Key? key,
     required this.date,
+    required this.time,
     required this.version,
     required this.remorque,
     required this.vehicule,
     required this.titre,
     required this.codet,
     required this.codetype,
+    this.codeCk = 0,
+    required this.executant,
   }) : super(key: key);
 
   @override
@@ -167,8 +171,87 @@ class _Ck1State extends State<Ck1> {
     return codeContenuDesignationMap[codeC] ?? 'Non trouvé';
   }
 
+  Future<void> saveData() async {
+    var url = Uri.parse('https://10.0.2.2:7116/api/CkEnteteCks');
+    print(url);
+    try {
+      http.Response response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'codeCk': widget.codeCk,
+          'codeT': widget.codet,
+          'type': widget.codetype,
+          'version': widget.version,
+          'vehicule': widget.vehicule,
+          'remorque': widget.remorque,
+          //'dateCk' : widget.date,
+          'heureCk': widget.time.toString(),
+        }),
+      );
+      print(response.body);
+      if (response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+      final int codeCk = responseData['codeCk']; // Récupérer le codeCk généré
+
+        setState(() {
+                  widget.codeCk = codeCk; // Stocker le codeCk généré dans la variable widget
+
+          
+        });
+
+        print('Enregistrement réussi');
+        await saveDataLigneCk(codeCk); // Appel de la fonction d'enregistrement des lignes
+        Navigator.pushNamed(context, AppRoutes.ck_soumis);
+      } else {
+        print('Échec de l\'enregistrement : ${response.statusCode}');
+        print(response.body);
+      }
+    } catch (e) {
+      print('Erreur lors de la requête : $e');
+    }
+  }
+
+  Future<void> saveDataLigneCk(int codeCk) async {
+    var url = Uri.parse('https://10.0.2.2:7116/api/CkLigneCks');
+    print(url);
+    for (var ss in codeSss) {
+      for (var codeContenu in codeContenusMap[ss.codeSs] ?? []) {
+        try {
+          http.Response response = await http.post(
+            url,
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode({
+              'codeCk': widget.codeCk,
+              'codeSs': ss.codeSs,
+              'codeContenu': codeContenu,
+              'etatContenu': isCheckedList[codeContenu] ?? false,
+              'observation': textMap[codeContenu] ?? '',
+              'executant': widget.executant,
+            }),
+          );
+          print(response.body);
+          if (response.statusCode != 201) {
+            print('Échec de l\'enregistrement de la ligne : ${response.statusCode}');
+            print(response.body);
+          }
+        } catch (e) {
+          print('Erreur lors de la requête pour enregistrer la ligne : $e');
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    DateTime parsedDate = DateTime.parse(widget.date);
+    DateTime parsedTime = DateTime.parse(widget.time);
+    String formattedDate = DateFormat('dd/MM/yyyy').format(parsedDate);
+    String formattedTime = DateFormat('HH:mm').format(parsedTime);
     return Scaffold(
       backgroundColor: Color(0xFFDDECED),
       body: SingleChildScrollView(
@@ -180,7 +263,17 @@ class _Ck1State extends State<Ck1> {
             children: [
               SizedBox(height: 24),
               Text(
-                 'Date : ${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.date))} ${DateFormat('HH:mm').format(DateTime.parse(widget.date))}',                style: TextStyle(
+                'Date : $formattedDate',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF112F33),
+                ),
+              ),
+              SizedBox(height: 24),
+              Text(
+                'Heure : $formattedTime',
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF112F33),
@@ -198,8 +291,7 @@ class _Ck1State extends State<Ck1> {
               SizedBox(height: 8),
               Text(
                 'Remorque : ${widget.remorque}',
-                style
-: TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF112F33),
@@ -223,20 +315,23 @@ class _Ck1State extends State<Ck1> {
                       child: ExpansionTile(
                         title: Text(
                           '${widget.titre}',
-                          style: TextStyle(fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF112F33),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF112F33),
                           ),
                         ),
                         children: [
                           for (var ss in codeSss)
                             Card(
                               child: ExpansionTile(
-                                title: Text(_getDesignationForCodeSs(ss.codeSs),
-                                 style: TextStyle(fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF112F33),
-                                ),
+                                title: Text(
+                                  _getDesignationForCodeSs(ss.codeSs),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF112F33),
+                                  ),
                                 ),
                                 children: [
                                   for (var codeContenu in codeContenusMap[ss.codeSs] ?? [])
@@ -249,8 +344,7 @@ class _Ck1State extends State<Ck1> {
                                               _getDesignationForCodeC(codeContenu),
                                               style: TextStyle(
                                                 fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              
+                                                fontWeight: FontWeight.bold,
                                                 color: isCheckedList[codeContenu] ?? false ? Colors.green : null,
                                               ),
                                             ),
@@ -298,7 +392,13 @@ class _Ck1State extends State<Ck1> {
                     SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.ck_soumis);
+                        print(widget.date);
+                        print(widget.time);
+                        print(widget.vehicule);
+                        print(widget.codetype);
+                        print(widget.remorque);
+                        print(widget.codet);
+                        saveData(); // Appel de la fonction d'enregistrement
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Color(0xFF112F33),

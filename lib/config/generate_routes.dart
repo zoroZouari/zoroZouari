@@ -150,6 +150,7 @@ class GenerateRoute {
       case AppRoutes.cK:
       return MaterialPageRoute(builder: (context) =>  Ck(
         date: DateTime.now().toString(),
+        time: DateTime.now().toString(),
         codeT: null, codeType: null
       ));
       
@@ -157,12 +158,14 @@ class GenerateRoute {
  final args = routeSettings.arguments as Map<String, dynamic>;
        return MaterialPageRoute(builder: (context)=>   Ck1(
         date: args['widget.date'],
+        time: args['widget.time'],
         version: args['selectedVersion'], 
         remorque: args['selectedRemorque'],
         vehicule: args['selectedVehicule'],
         titre: args['selectedTitreDesignation'],
         codet: args['selectedTitre'],
         codetype: args['selectedType'],
+        executant: args['selectedMecanicien'],
         ));
 
        case AppRoutes.menu_ck:

@@ -12,12 +12,14 @@ import 'package:http/http.dart' as http;
 
 class Ck extends StatefulWidget {
   final String date;
+  final String time;
    String? codeT;
  String? codeType;
 
     Ck({
     Key? key,
     required this.date,
+    required this.time,
      this.codeT,
     this.codeType,
   }) : super(key: key);
@@ -259,12 +261,13 @@ class _ConfigCkState extends State<Ck> {
                               if (pickedStartDate != null) {
                                 setState(() {
                                   startDate = pickedStartDate;
+                                  print(pickedStartDate);
                                 });
                               }
                             },
                             child: Text(
                               startDate != null
-                                  ? '${startDate!.day}/${startDate!.month}/${startDate!.year}'
+                                  ? DateFormat('dd/MM/yyyy').format(startDate!)
                                   : 'Choisir',
                             ),
                           ),
@@ -298,11 +301,12 @@ class _ConfigCkState extends State<Ck> {
                               if (pickedStartTime != null) {
                                 setState(() {
                                   startTime = pickedStartTime;
+                                  
                                 });
                               }
                             },
                             child: Text(
-                              startTime != null ? DateFormat('HH:mm').format(DateTime(0, 1, 1, startTime!.hour, startTime!.minute)) : 'Choisissez l\'heure',
+                              startTime != null ? startTime!.format(context) : 'Choisissez l\'heure',
                             ),
                           ),
                         ],
@@ -425,18 +429,23 @@ class _ConfigCkState extends State<Ck> {
                       SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: () {
-                         
+                          print(widget.time);
+                                  
+
                           Navigator.push(
                             context, 
                             MaterialPageRoute(
         builder: (context) => Ck1(
           date: widget.date,
+          time: widget.time,
           version: selectedVersion ?? '', // Assurez-vous que selectedVersion est non null ou fournissez une valeur par défaut appropriée
           remorque: selectedRemorque ?? '', // Assurez-vous que selectedRemorque est non null ou fournissez une valeur par défaut appropriée
           vehicule: selectedVehicule ?? '',
           titre: selectedTitreDesignation ??'',
           codet:selectedTitre ?? '',
-          codetype: selectedType ?? '', // Assurez-vous que selectedVehicule est non null ou fournissez une valeur par défaut appropriée
+          codetype: selectedType ?? '',
+          executant : selectedMecanicien ?? '',
+           // Assurez-vous que selectedVehicule est non null ou fournissez une valeur par défaut appropriée
         ),
        ),
         );
