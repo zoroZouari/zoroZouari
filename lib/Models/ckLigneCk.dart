@@ -1,4 +1,4 @@
-class CkEnteteCk{
+class CkLigneCk{
   
   final int codeCk;
   final int codeSs;
@@ -7,7 +7,7 @@ class CkEnteteCk{
   final String observation;
   final String executant;
 
-  CkEnteteCk({
+  CkLigneCk({
     
     required this.codeCk,
     required this.codeSs,
@@ -19,7 +19,7 @@ class CkEnteteCk{
 
   });
 
-  factory CkEnteteCk.fromJson(Map<String, dynamic> json){
+  factory CkLigneCk.fromJson(Map<String, dynamic> json){
 int codeCk = json['codeCk'] ?? '';
 int codeSs = json['codeSs'] ?? '';
 int codeContenu = json['codeContenu'] ?? '';
@@ -28,7 +28,7 @@ String observation = json['observation'] ?? '';
 String executant = json['executant'] ?? '';
 
 
-return CkEnteteCk(
+return CkLigneCk(
   codeCk: codeCk, 
   codeSs: codeSs, 
   codeContenu: codeContenu,

@@ -1,19 +1,67 @@
-
-import 'package:firstparc/config/app_routes.dart';
+import 'package:firstparc/Models/ckEnteteCk.dart';
+import 'package:firstparc/Models/ckLigneCk.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'ckDetailsPage.dart';
+
 
 class HistoriqueCk extends StatefulWidget {
-  const HistoriqueCk({Key? key});
+  const HistoriqueCk({Key? key}) : super(key: key);
 
   @override
-  State<HistoriqueCk> createState() => _HistoriqueCkState();
+  _HistoriqueCkState createState() => _HistoriqueCkState();
 }
 
 class _HistoriqueCkState extends State<HistoriqueCk> {
   DateTime? startDate;
   DateTime? endDate;
   bool showMenu = false;
-   bool searchPerformed = false ;
+  bool searchPerformed = false;
+  List<CkEnteteCk> searchResults = [];
+
+  Future<void> _fetchData() async {
+    if (startDate != null && endDate != null) {
+      final response = await http.get(Uri.parse(
+          'https://10.0.2.2:7116/api/CkEnteteCks/ByDateRange?startDate=${startDate!.toIso8601String().split('T')[0]}&endDate=${endDate!.toIso8601String().split('T')[0]}'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        setState(() {
+          searchResults = jsonData.map((item) => CkEnteteCk.fromJson(item)).toList();
+        });
+      } else {
+        // Gérer l'erreur
+        setState(() {
+          searchResults = [];
+        });
+      }
+    }
+  }
+
+  void _navigateToDetails(CkEnteteCk ckEnteteCk) async {
+    try {
+      final response = await http.get(Uri.parse(
+        'https://10.0.2.2:7116/api/CkLigneCks/byCodeCk/${ckEnteteCk.codeCk}',
+      ));
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        List<CkLigneCk> ckLignes = jsonData.map((item) => CkLigneCk.fromJson(item)).toList();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CkDetailsPage(ckEnteteCk: ckEnteteCk, ckLignes: ckLignes),
+          ),
+        );
+      } else {
+        print('Error fetching details: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching details: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +98,6 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Filter widgets go here
             SingleChildScrollView(
               child: Container(
                 decoration: BoxDecoration(
@@ -87,23 +134,25 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
                           ),
                         ),
                         SizedBox(width: 10),
-                       ElevatedButton(onPressed: () async {
-                      final pickedStartDate = await showDatePicker(
-                        context: context,
-                        initialDate: startDate ?? DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime.now(),
-                        );
-                        if (pickedStartDate != null) {
-                          setState(() {
-                            startDate = pickedStartDate;
-                          });
-                        }
-                    },
-                         child: Text(startDate != null
-                     ? '${startDate!.day}/${startDate!.month}/${startDate!.year}'
-                     :'Choisir',
-                     ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final pickedStartDate = await showDatePicker(
+                              context: context,
+                              initialDate: startDate ?? DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime.now(),
+                            );
+                            if (pickedStartDate != null) {
+                              setState(() {
+                                startDate = pickedStartDate;
+                              });
+                            }
+                          },
+                          child: Text(
+                            startDate != null
+                                ? '${startDate!.day}/${startDate!.month}/${startDate!.year}'
+                                : 'Choisir',
+                          ),
                         ),
                       ],
                     ),
@@ -119,23 +168,25 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
                           ),
                         ),
                         SizedBox(width: 22),
-                        ElevatedButton(onPressed: () async {
-                          final pickedEndDate = await showDatePicker(
-                            context: context,
-                             initialDate: endDate ?? DateTime.now(),
-                             firstDate: DateTime(2000),
-                             lastDate: DateTime.now(),
-                             );
-                             if (pickedEndDate != null) {
+                        ElevatedButton(
+                          onPressed: () async {
+                            final pickedEndDate = await showDatePicker(
+                              context: context,
+                              initialDate: endDate ?? DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime.now(),
+                            );
+                            if (pickedEndDate != null) {
                               setState(() {
                                 endDate = pickedEndDate;
                               });
-                             }    
-                        }, 
-                        child: Text(endDate != null
-                        ? '${endDate!.day}/${endDate!.month}/${endDate!.year}'
-                        : 'Choisir',
-                        ),
+                            }
+                          },
+                          child: Text(
+                            endDate != null
+                                ? '${endDate!.day}/${endDate!.month}/${endDate!.year}'
+                                : 'Choisir',
+                          ),
                         ),
                       ],
                     ),
@@ -143,7 +194,7 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
-                          // Action for search
+                          _fetchData();
                           setState(() {
                             searchPerformed = true;
                           });
@@ -166,11 +217,11 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
                 ),
               ),
             ),
-            // ListView.builder goes here
             Expanded(
               child: ListView.builder(
-                itemCount: 6,
+                itemCount: searchResults.length,
                 itemBuilder: (context, index) {
+                  final ckEnteteCk = searchResults[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Card(
@@ -180,7 +231,7 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Code Ck: ',
+                              'Code Ck: ${ckEnteteCk.codeCk}',
                               style: TextStyle(
                                 color: Color(0xFF112F33),
                                 fontWeight: FontWeight.bold,
@@ -188,27 +239,35 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
                               ),
                             ),
                             Text(
-                              ' Titre : ',
+                              'Titre: ${ckEnteteCk.codeT}',
                               style: TextStyle(
                                 color: Color(0xFF112F33),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                             Text(
-                              'Vehicule :',
+                              'Véhicule: ${ckEnteteCk.vehicule}',
                               style: TextStyle(
                                 color: Color(0xFF112F33),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                fontSize: 16,
                               ),
                             ),
                             Text(
-                              'Remorque :',
+                              'Remorque: ${ckEnteteCk.remorque}',
                               style: TextStyle(
                                 color: Color(0xFF112F33),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              'Date: ${ckEnteteCk.heureCk}',
+                              style: TextStyle(
+                                color: Color(0xFF112F33),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
                           ],
@@ -219,7 +278,7 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
                             size: 40,
                           ),
                           onPressed: () {
-                            Navigator.pushNamed(context, AppRoutes.validerMissionChauff);
+                            _navigateToDetails(ckEnteteCk);
                           },
                         ),
                       ),
@@ -231,29 +290,6 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
           ],
         ),
       ),
-      floatingActionButton: showMenu
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                  backgroundColor: Colors.white,
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.mecprofil_page);
-                  },
-                  child: Icon(Icons.edit, color: Color(0xFF112F33)),
-                ),
-                SizedBox(height: 16),
-                FloatingActionButton(
-                  backgroundColor: Colors.white,
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.login_page);
-                  },
-                  child: Icon(Icons.logout, color: Color(0xFF112F33)),
-                ),
-              ],
-            )
-          : SizedBox(),
     );
   }
 }

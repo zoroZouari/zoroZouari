@@ -15,6 +15,7 @@ import 'package:firstparc/Chauffeur/menuChauffeur.dart';
 import 'package:firstparc/Chauffeur/validerMissionChauff.dart';
 import 'package:firstparc/Checklist/cK.dart';
 import 'package:firstparc/Checklist/cK1.dart';
+import 'package:firstparc/Checklist/ckDetailsPage.dart';
 import 'package:firstparc/Checklist/ck_soumis.dart';
 import 'package:firstparc/Checklist/historique_ck.dart';
 import 'package:firstparc/Checklist/menu_ck.dart';
@@ -177,6 +178,14 @@ class GenerateRoute {
        case AppRoutes.ck_soumis:
         return MaterialPageRoute(builder: (context)=> const  CkSoumis());
 
+        case AppRoutes.ckDetailsPage:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (context) => CkDetailsPage(
+            ckEnteteCk: args['ckEnteteCk'],
+            ckLignes: args['ckLignes'],
+          ),
+        );
 
        /////////////////////////////  Profil Page /////////////////////////////
        case AppRoutes.profil_page:
@@ -222,4 +231,4 @@ class GenerateRoute {
   }
     return null;
   }
-  }
+}

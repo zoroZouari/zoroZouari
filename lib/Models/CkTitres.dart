@@ -3,14 +3,14 @@ class CkTitres {
  
  final int codeT;
  final String designation;
- final String libelle;
+ final String? libelle;
 
  CkTitres ({
 
   
   required this.codeT,
   required this.designation,
-  required this.libelle,
+   this.libelle,
   
 
  });

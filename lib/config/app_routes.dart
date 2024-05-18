@@ -35,6 +35,7 @@ class AppRoutes {
   static const String menu_ck = '/menu_ck';
   static const String ck_soumis =  '/ck_soumis';
   static const String historique_ck = '/historique_ck';
+  static const String ckDetailsPage= '/historique_ck';
 
   ///////////////////////////// Profil Page /////////////////////////////////
   static const String profil_page = '/profil_page';
