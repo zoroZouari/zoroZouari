@@ -8,14 +8,14 @@ import 'package:intl/intl.dart';
 
 class Ck1 extends StatefulWidget {
   final String date;
- String time;
-  String version;
+  final String time;
+  final String version;
   final String remorque;
   final String vehicule;
   final String titre;
   final String executant;
-  String codet;
-  String codetype;
+  final String codet;
+  final String codetype;
   int codeCk;
   Ck1({
     Key? key,
@@ -172,47 +172,62 @@ class _Ck1State extends State<Ck1> {
   }
 
   Future<void> saveData() async {
-    var url = Uri.parse('https://10.0.2.2:7116/api/CkEnteteCks');
-    print(url);
-    try {
-      http.Response response = await http.post(
-        url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({
-          'codeCk': widget.codeCk,
-          'codeT': widget.codet,
-          'type': widget.codetype,
-          'version': widget.version,
-          'vehicule': widget.vehicule,
-          'remorque': widget.remorque,
-          //'dateCk' : widget.date,
-          'heureCk': widget.time.toString(),
-        }),
-      );
-      print(response.body);
-      if (response.statusCode == 201) {
-        final responseData = jsonDecode(response.body);
+  var url = Uri.parse('https://10.0.2.2:7116/api/CkEnteteCks');
+  print(url);
+
+  // Parsing and formatting the date and time
+  DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(widget.date);
+  DateTime parsedTime = DateFormat('HH:mm').parse(widget.time);
+  
+  // Combine the date and time
+  DateTime combinedDateTime = DateTime(
+    parsedDate.year,
+    parsedDate.month,
+    parsedDate.day,
+    parsedTime.hour,
+    parsedTime.minute,
+  );
+
+  // Format the combined DateTime for the API
+  String formattedDateTime = DateFormat('yyyy-MM-ddTHH:mm:ss').format(combinedDateTime);
+
+  try {
+    http.Response response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        'codeCk': widget.codeCk,
+        'codeT': widget.codet,
+        'type': widget.codetype,
+        'version': widget.version,
+        'vehicule': widget.vehicule,
+        'remorque': widget.remorque,
+        'heureCk': formattedDateTime, // Combine date and time here
+      }),
+    );
+    print(response.body);
+    if (response.statusCode == 201) {
+      final responseData = jsonDecode(response.body);
       final int codeCk = responseData['codeCk']; // Récupérer le codeCk généré
 
-        setState(() {
-                  widget.codeCk = codeCk; // Stocker le codeCk généré dans la variable widget
+      setState(() {
+        widget.codeCk = codeCk; // Stocker le codeCk généré dans la variable widget
+      });
 
-          
-        });
-
-        print('Enregistrement réussi');
-        await saveDataLigneCk(codeCk); // Appel de la fonction d'enregistrement des lignes
-        Navigator.pushNamed(context, AppRoutes.ck_soumis);
-      } else {
-        print('Échec de l\'enregistrement : ${response.statusCode}');
-        print(response.body);
-      }
-    } catch (e) {
-      print('Erreur lors de la requête : $e');
+      print('Enregistrement réussi');
+      await saveDataLigneCk(codeCk); // Appel de la fonction d'enregistrement des lignes
+      Navigator.pushNamed(context, AppRoutes.ck_soumis);
+    } else {
+      print('Échec de l\'enregistrement : ${response.statusCode}');
+      print(response.body);
     }
+  } catch (e) { 
+    print('Erreur lors de la requête : $e');
   }
+}
+
 
   Future<void> saveDataLigneCk(int codeCk) async {
     var url = Uri.parse('https://10.0.2.2:7116/api/CkLigneCks');
@@ -240,7 +255,7 @@ class _Ck1State extends State<Ck1> {
             print(response.body);
           }
         } catch (e) {
-          print('Erreur lors de la requête pour enregistrer la ligne : $e');
+          print('Erreur lors de la requête pour la ligne : $e');
         }
       }
     }
@@ -248,10 +263,12 @@ class _Ck1State extends State<Ck1> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime parsedDate = DateTime.parse(widget.date);
-    DateTime parsedTime = DateTime.parse(widget.time);
+    // Parsing and formatting the date and time
+    DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(widget.date);
+    DateTime parsedTime = DateFormat('HH:mm').parse(widget.time);
     String formattedDate = DateFormat('dd/MM/yyyy').format(parsedDate);
     String formattedTime = DateFormat('HH:mm').format(parsedTime);
+
     return Scaffold(
       backgroundColor: Color(0xFFDDECED),
       body: SingleChildScrollView(

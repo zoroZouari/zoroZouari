@@ -1,42 +1,39 @@
-class CkLigneCk{
-  
+class CkLigneCk {
   final int codeCk;
   final int codeSs;
   final int codeContenu;
-  final bool? etatContenu;
-  final String observation;
+  bool? etatContenu; // Allow modification
+  String observation;
   final String executant;
 
   CkLigneCk({
-    
     required this.codeCk,
     required this.codeSs,
     required this.codeContenu,
     required this.etatContenu,
     required this.observation,
     required this.executant,
-    
-
   });
 
-  factory CkLigneCk.fromJson(Map<String, dynamic> json){
-int codeCk = json['codeCk'] ?? '';
-int codeSs = json['codeSs'] ?? '';
-int codeContenu = json['codeContenu'] ?? '';
-bool etatContenu = json['etatContenu'] as bool;
-String observation = json['observation'] ?? '';
-String executant = json['executant'] ?? '';
+  factory CkLigneCk.fromJson(Map<String, dynamic> json) {
+    return CkLigneCk(
+      codeCk: json['codeCk'] ?? 0,
+      codeSs: json['codeSs'] ?? 0,
+      codeContenu: json['codeContenu'] ?? 0,
+      etatContenu: json['etatContenu'],
+      observation: json['observation'] ?? '',
+      executant: json['executant'] ?? '',
+    );
+  }
 
-
-return CkLigneCk(
-  codeCk: codeCk, 
-  codeSs: codeSs, 
-  codeContenu: codeContenu,
-  etatContenu: etatContenu,
-  observation: observation,
-  executant: executant,
-  
-
-  );
- }
+  Map<String, dynamic> toJson() {
+    return {
+      'codeCk': codeCk,
+      'codeSs': codeSs,
+      'codeContenu': codeContenu,
+      'etatContenu': etatContenu,
+      'observation': observation,
+      'executant': executant,
+    };
+  }
 }

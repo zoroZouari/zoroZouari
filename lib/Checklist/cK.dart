@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Ck extends StatefulWidget {
-  final String date;
-  final String time;
+   String date;
+   String time;
    String? codeT;
  String? codeType;
 
@@ -156,6 +156,17 @@ class _ConfigCkState extends State<Ck> {
     });
   }
 
+   String formatDate(DateTime date) {
+  return DateFormat('dd/MM/yyyy').format(date);
+}
+  
+String formatTime(TimeOfDay time) {
+  final now = DateTime.now();
+  final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+  return DateFormat('HH:mm').format(dt);
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -261,13 +272,14 @@ class _ConfigCkState extends State<Ck> {
                               if (pickedStartDate != null) {
                                 setState(() {
                                   startDate = pickedStartDate;
-                                  print(pickedStartDate);
+                                  widget.date = formatDate(pickedStartDate);
+                                  print(widget.date);
                                 });
                               }
                             },
                             child: Text(
                               startDate != null
-                                  ? DateFormat('dd/MM/yyyy').format(startDate!)
+                                  ? formatDate(startDate!)
                                   : 'Choisir',
                             ),
                           ),
@@ -301,7 +313,7 @@ class _ConfigCkState extends State<Ck> {
                               if (pickedStartTime != null) {
                                 setState(() {
                                   startTime = pickedStartTime;
-                                  
+                                  widget.time =formatTime(pickedStartTime);
                                 });
                               }
                             },
