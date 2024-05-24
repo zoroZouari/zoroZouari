@@ -7,6 +7,7 @@ import 'package:firstparc/Models/lieuDechargement.dart';
 import 'package:firstparc/config/app_routes.dart';
 import 'package:firstparc/services/chauffeur_api.dart';
 import 'package:firstparc/services/client_api.dart';
+import 'package:firstparc/services/region_api.dart';
 import 'package:firstparc/services/remorque_api.dart';
 import 'package:firstparc/services/unite_api.dart';
 import 'package:firstparc/services/vehicule_api.dart';
@@ -42,6 +43,7 @@ class _MissionFormState extends State<MissionForm> {
   String? selectedRemorque;
   String? selectedUnite; 
   String? selectedDistance;
+  String? selectedRegion;
 
 
    List<String> chauffeurNames = []; // liste des chauffeurs
@@ -52,6 +54,7 @@ class _MissionFormState extends State<MissionForm> {
    List<LieuChargement> lieudechargements = []; // liste des lieux de chargements
    List<LieuDechargement> lieudedechargements = []; // liste des lieux de déchargements
    List<FaLieuDistance> distances = []; // Liste des distances
+   List<String> regions = []; // Liste des régions
  
    
 @override
@@ -63,6 +66,7 @@ class _MissionFormState extends State<MissionForm> {
     fetchClients();
     fetchLieuxChargements();
     fetchLieuxDeChargements();
+    fetchRegions();
     
 
 
@@ -185,7 +189,15 @@ class _MissionFormState extends State<MissionForm> {
       print('Erreur lors de la récupération des distances : $e');
     }
   }
-  ///////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////// Choix Region   ////////////////////////////////////////////
+  Future<void> fetchRegions() async {
+    RegionApi regionApi = RegionApi();
+    List<String> desigregion = await regionApi.fetchRegions();
+    setState(() {
+      regions = desigregion;
+    });
+  }
+  /////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -624,16 +636,39 @@ Row(
                           }).toList(),
                         ),
                       ),
-
+///////////////////////////////////////////   CHOIX DE REGION /////////////////////////////////////
                      SizedBox(height: 24),
-                Text(
-                  ' Région :',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF112F33),
-                  ),
-                ),
+                 const Text(
+                        'Région :',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF112F33),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.black),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButton<String>(
+                          value: selectedRegion,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedRegion = value;
+                              print('Selected region: $selectedRegion');
+                            });
+                          },
+                          items: regions.map((String region) {
+                            return DropdownMenuItem<String>(
+                              value: region,
+                              child: Text(region),
+                            );
+                          }).toList(),
+                        ),
+                      ),
 
                 
                
