@@ -82,7 +82,10 @@ class GenerateRoute {
        return MaterialPageRoute(builder: (context) => const CkModifie());
        */
        case AppRoutes.mission_form:
-       return MaterialPageRoute(builder: (context) => const MissionForm());
+       return MaterialPageRoute(builder: (context) =>  MissionForm(
+        codeLieuDepart: null, codeLieuArrive: null,
+        
+       ));
 
        case AppRoutes.menu_mission:
        return MaterialPageRoute(builder: (context) => const MenuMission());

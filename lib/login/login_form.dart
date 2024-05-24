@@ -27,9 +27,7 @@ class _LoginFormState extends State<LoginForm> {
       
       child: Padding(
         
-        padding: const EdgeInsets.symmetric(
-          horizontal: 30,
-        ),
+       padding: const EdgeInsets.all(16.0),
         child: SizedBox(
           width: double.maxFinite,
           child: Form(
@@ -144,14 +142,13 @@ class _LoginFormState extends State<LoginForm> {
                         final utilisateur = Utilisateur(
                           loginUser: usernameController.text,
                          motPassUser: passwordController.text,
-                    
-                        
+                  
                          );
                          final authentifie = await UtilisateurApi.authenticate(utilisateur);
                          if(authentifie) {
 
                          print(authentifie);
-                        Navigator.pushNamed(context, AppRoutes.menu_ck);
+                        Navigator.pushNamed(context, AppRoutes.menuchefdeparc);
 
                         print('login done');
                       } else {

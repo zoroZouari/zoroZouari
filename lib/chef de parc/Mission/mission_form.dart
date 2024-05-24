@@ -1,10 +1,26 @@
 
-import 'package:firstparc/config/app_routes.dart';
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:firstparc/Models/FaLieuDistance.dart';
+import 'package:firstparc/Models/lieuChargement.dart';
+import 'package:firstparc/Models/lieuDechargement.dart';
+import 'package:firstparc/config/app_routes.dart';
+import 'package:firstparc/services/chauffeur_api.dart';
+import 'package:firstparc/services/client_api.dart';
+import 'package:firstparc/services/remorque_api.dart';
+import 'package:firstparc/services/unite_api.dart';
+import 'package:firstparc/services/vehicule_api.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http ;
 
 class MissionForm extends StatefulWidget {
-  const MissionForm({Key? key});
+  String? codeLieuDepart;
+  String? codeLieuArrive;
+
+   MissionForm({Key? key,
+  this.codeLieuArrive,
+  this.codeLieuDepart,
+  }) : super(key: key);
 
   @override
   State<MissionForm> createState() => _MissionFormState();
@@ -12,33 +28,168 @@ class MissionForm extends StatefulWidget {
 
 class _MissionFormState extends State<MissionForm> {
 
-
-bool diversSelected = false;
-  bool carburantSelected = false;
-  bool allerSRVideSelected = false;
-  bool retourSRVideSelected = false;
-  bool allerSRChargeSelected = false;
-  bool retourSRChargeSelected = false;
-  bool allerSoloSelected = false;
-  bool retourSoloSelected = false;
-  int idMission = 1;
   String? selectedMissionType;
   DateTime? startDate;
   DateTime? endDate;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
-  String? selectedParc;
-  String? selectedClient;
+
   String? selectedVehicule;
   String? selectedChauffeur;
-  String? selectedConvoyeur;
   String? selectedLieuChargement;
   String? selectedLieuDechargement;
+  String? selectedClient;
+  String? selectedRemorque;
+  String? selectedUnite; 
+  String? selectedDistance;
 
+
+   List<String> chauffeurNames = []; // liste des chauffeurs
+   List<String> vehicules = []; // Liste des véhicules
+   List<String> remorques = []; // Liste des remorques
+   List<String> clients = []; // Liste des clients
+   List<String> unites = []; // Liste des unités
+   List<LieuChargement> lieudechargements = []; // liste des lieux de chargements
+   List<LieuDechargement> lieudedechargements = []; // liste des lieux de déchargements
+   List<FaLieuDistance> distances = []; // Liste des distances
+ 
+   
+@override
+  void initState() {
+    super.initState();
+    fetchChauffeurs();
+    fetchVehicules();
+    fetchRemorque();
+    fetchClients();
+    fetchLieuxChargements();
+    fetchLieuxDeChargements();
+    
+
+
+  
+    
+    // Initialisation de la date et de l'heure actuelles
+    startDate = DateTime.now();
+    startTime = TimeOfDay.now();
+  }
+
+ ////////////////////////////////////////////////////  FETCH CHAUFFEURS ///////////////////////////////////
+  Future<void> fetchChauffeurs() async {
+    ChauffeurApi chauffeurApi = ChauffeurApi();
+    List<String> chauffeurName = await chauffeurApi.fetchChauffeurs();
+    setState(() {
+      chauffeurNames = chauffeurName;
+    });
+  }
+  /////////////////////////////////////// FETCH VEHICULES //////////////////////////////////////////////
+   Future<void> fetchVehicules() async {
+    VehiculeApi vehiculeApi = VehiculeApi();
+    List<String> immatriculation = await vehiculeApi.fetchVehicules();
+    setState(() {
+      vehicules = immatriculation;
+    });
+  }
+////////////////////////////////////////  fETCH REMORQUES //////////////////////////////////////////////
+  Future<void> fetchRemorque() async {
+    RemorqueApi remorqueApi = RemorqueApi();
+    List<String> matriculeremorque = await remorqueApi.fetchRemorques();
+    setState(() {
+      remorques = matriculeremorque;
+    });
+  }
+  /////////////////////////////////// FETCH CLIENTS ////////////////////////////////////////////////////
+   Future<void> fetchClients() async {
+    ClientApi clientApi = ClientApi();
+    List<String> nomClient = await clientApi.fetchClients();
+    setState(() {
+      clients = nomClient;
+    });
+  }
+  ///////////////////////////////////////// Fetch Unité        //////////////////////////////////////////
+  Future<void> fetchUnites() async {
+    UniteApi uniteApi = UniteApi();
+    List<String> desigUnite = await uniteApi.fetchUnites();
+    setState(() {
+      unites = desigUnite;
+    });
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Fonction pour récupérer les lieux depuis l'API
+  Future<void> fetchLieuxChargements() async {
+    var url = Uri.parse('https://10.0.2.2:7116/api/LieuChargements');
+    print(url);
+    try {
+      http.Response response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        setState(() {
+          lieudechargements = data.map((json) => LieuChargement.fromJson(json)).toList();
+        });
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des lieux de chargements : $e');
+    }
+  }
+  ///////////////////////////////////////////// fetch lieux de déchargements  ///////////////////////////////////////
+  Future<void> fetchLieuxDeChargements() async {
+    var url = Uri.parse('https://10.0.2.2:7116/api/LieuDechargements');
+    print(url);
+    try {
+      http.Response response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        setState(() {
+          lieudedechargements = data.map((json) => LieuDechargement.fromJson(json)).toList();
+        });
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des lieux de déchargements : $e');
+    }
+  }
+  //////////////////////////////////////// FETCH DISTANCE KM      //////////////////////////////////////////
+   // Fonction pour récupérer les versions depuis l'API
+  Future<void> fetchDistance() async {
+    
+    var url = Uri.parse('https://10.0.2.2:7116/api/FaLieuDistances/${widget.codeLieuDepart}/${widget.codeLieuArrive}');
+
+    print(url);
+
+    try {
+      http.Response response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        print(response.body);
+        setState(() {
+          distances = data.map((json) => FaLieuDistance.fromJson(json)).toList();
+        });
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des distances : $e');
+    }
+  }
+  ///////////////////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFDDECED),
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -51,17 +202,6 @@ bool diversSelected = false;
                   Navigator.pop(context);
                 },
               ),
-
-              
-              SizedBox(height: 16),
-              Text('Id Mission : $idMission',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xFF112F33),
-              ),
-              ),
-
 
               SizedBox(height: 16),
               Text('Type mission :',
@@ -92,48 +232,7 @@ bool diversSelected = false;
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  Text('Divers',
-                  style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xFF112F33),
-              ),
-              ),
-                  Checkbox(
-                    value: diversSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        diversSelected = value!;
-                        if (value == true) {
-                          carburantSelected = false;
-                        }
-                      });
-                    },
-                  ),
-                  
-                  SizedBox(width: 16),
-                  Text('Carburant',
-                  style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xFF112F33),
-              ),
-                  ),
-                  Checkbox(
-                    value: carburantSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        carburantSelected = value!;
-                        if (value == true) {
-                          diversSelected = false;
-                        }
-                      });
-                    },
-                  ),                
-                ],
-              ),
+              
               SizedBox(height: 8),
                 Row(
                   children: [
@@ -274,420 +373,271 @@ Row(
     ),
   ],
 ),
-
-SizedBox(height: 24),
-                Text(
-                  'Sélectionner un Parc :',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF112F33),
-                  ),
-                ),
-                SizedBox(height: 8),
-                // Input pour sélectionner une voiture
-                DropdownButton<String>(
-                  value: selectedParc,
-                  onChanged: (value)
-                    {
-                      setState(() {
-                        selectedParc = value;
-                      });
-                      //implémenter logique de séléction
-            
-                    },
-                    // ajouter ici les valeurs pour les options
-            
-                    items: List.generate(5, (index) {
-                      return DropdownMenuItem<String>(
-                        value: 'Parc ${index +1}',
-                        child: Text('Parc ${index + 1}'),
-                      );
-                      }),
-                    ),
-                    /*
-                  // Ajoutez ici les options pour sélectionner une voiture
-                  onChanged: (value) {
-                    // Implémentez ici la logique de sélection
-                  },
-                  // Ajoutez ici les valeurs pour les options
-                  items: [],
-                ),
-            */
-
+///////////////////////////////////   Clients //////////////////////////////////////////////////
               SizedBox(height: 24),
-                Text(
-                  'Sélectionner un client :',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF112F33),
-                  ),
-                ),
-                SizedBox(height: 8),
-                // Input pour sélectionner une voiture
-                DropdownButton<String>(
-                  value: selectedClient,
-                  onChanged: (value)
-                    {
-                      setState(() {
-                        selectedClient = value;
-                      });
-                      //implémenter logique de séléction
-            
-                    },
-                    // ajouter ici les valeurs pour les options
-            
-                    items: List.generate(5, (index) {
-                      return DropdownMenuItem<String>(
-                        value: 'client ${index +1}',
-                        child: Text('Client ${index + 1}'),
-                      );
-                      }),
-                    ),
-                    /*
-                  // Ajoutez ici les options pour sélectionner une voiture
-                  onChanged: (value) {
-                    // Implémentez ici la logique de sélection
-                  },
-                  // Ajoutez ici les valeurs pour les options
-                  items: [],
-                ),
-            */
-
+                const Text(
+                        'Client :',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF112F33),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.black),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButton<String>(
+                          value: selectedClient,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedClient = value;
+                              print('Selected client: $selectedClient');
+                            });
+                          },
+                          items: clients.map((String client) {
+                            return DropdownMenuItem<String>(
+                              value: client,
+                              child: Text(client),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+  /////////////////////////////////////////////////  Choix De véhicule //////////////////////////////
             SizedBox(height: 24),
+               Text(
+                        'Sélectionner une voiture :',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF112F33),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.black),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButton<String>(
+                          value: selectedVehicule,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedVehicule = value;
+                              print('Selected vehicule: $selectedVehicule');
+                            });
+                          },
+                          items: vehicules.map((String vehicule) {
+                            return DropdownMenuItem<String>(
+                              value: vehicule,
+                              child: Text(vehicule),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+//////////////////////////////////////////////////   REMORQUES BOX ///////////////////////////////////////
+                    SizedBox(height: 24),
                 Text(
-                  'Sélectionner une Vehicule :',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF112F33),
-                  ),
-                ),
-                SizedBox(height: 8),
-                // Input pour sélectionner une voiture
-                DropdownButton<String>(
-                  value: selectedVehicule,
-                  onChanged: (value)
-                    {
-                      setState(() {
-                        selectedVehicule = value;
-                      });
-                      //implémenter logique de séléction
-            
-                    },
-                    // ajouter ici les valeurs pour les options
-            
-                    items: List.generate(5, (index) {
-                      return DropdownMenuItem<String>(
-                        value: 'Vehicule ${index +1}',
-                        child: Text('Vehicule ${index + 1}'),
-                      );
-                      }),
-                    ),
-                    /*
-                  // Ajoutez ici les options pour sélectionner une voiture
-                  onChanged: (value) {
-                    // Implémentez ici la logique de sélection
-                  },
-                  // Ajoutez ici les valeurs pour les options
-                  items: [],
-                ),
-            */
-              
+                        'Selectionner Remorque :',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF112F33),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.black),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButton<String>(
+                          value: selectedRemorque,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedRemorque = value;
+                              print('Selected remorque: $selectedRemorque');
+                            });
+                          },
+                          items: remorques.map((String remorque) {
+                            return DropdownMenuItem<String>(
+                              value: remorque,
+                              child: Text(remorque),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+ ///////////////////////////////////////////////  choix chauffeur /////////////////////////////////////////////             
               SizedBox(height: 24),
-                Text(
-                  'Sélectionner un chauffeur :',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF112F33),
-                  ),
-                ),
-                SizedBox(height: 8),
-                // Input pour sélectionner une voiture
-                DropdownButton<String>(
-                  value: selectedChauffeur,
-                  onChanged: (value)
-                    {
-                      setState(() {
-                        selectedChauffeur = value;
-                      });
-                      //implémenter logique de séléction
-            
-                    },
-                    // ajouter ici les valeurs pour les options
-            
-                    items: List.generate(5, (index) {
-                      return DropdownMenuItem<String>(
-                        value: 'Chauffeur ${index +1}',
-                        child: Text('Chauffeur ${index + 1}'),
-                      );
-                      }),
-                    ),
-                    /*
-                  // Ajoutez ici les options pour sélectionner une voiture
-                  onChanged: (value) {
-                    // Implémentez ici la logique de sélection
-                  },
-                  // Ajoutez ici les valeurs pour les options
-                  items: [],
-                ),
-            */
+                const Text(
+                        'Chauffeur :',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF112F33),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.black),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButton<String>(
+                          value: selectedChauffeur,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedChauffeur = value;
+                              print('Selected chauffeur: $selectedChauffeur');
+                            });
+                          },
+                          items: chauffeurNames.map((String chauffeurName) {
+                            return DropdownMenuItem<String>(
+                              value: chauffeurName,
+                              child: Text(chauffeurName),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+/////////////////////////////////////////////////  Choix Unité /////////////////////////////////////////
+             SizedBox(height: 24),
+                 const Text(
+                        'Unité :',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF112F33),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.black),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButton<String>(
+                          value: selectedUnite,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedUnite = value;
+                              print('Selected Unité: $selectedUnite');
+                            });
+                          },
+                          items: unites.map((String unite) {
+                            return DropdownMenuItem<String>(
+                              value: unite,
+                              child: Text(unite),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+  /////////////////////////////////////////// CHOIX LIEU DEPART //////////////////////////////////////////
              SizedBox(height: 24),
                 Text(
-                  'Sélectionner un convoyeur :',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF112F33),
-                  ),
-                ),
-                SizedBox(height: 8),
-                // Input pour sélectionner une voiture
-                DropdownButton<String>(
-                  value: selectedConvoyeur,
-                  onChanged: (value)
-                    {
-                      setState(() {
-                        selectedConvoyeur = value;
-                      });
-                      //implémenter logique de séléction
-            
-                    },
-                    // ajouter ici les valeurs pour les options
-            
-                    items: List.generate(5, (index) {
-                      return DropdownMenuItem<String>(
-                        value: 'Convoyeur ${index +1}',
-                        child: Text('Convoyeur ${index + 1}'),
-                      );
-                      }),
-                    ),
-                    /*
-                  // Ajoutez ici les options pour sélectionner une voiture
-                  onChanged: (value) {
-                    // Implémentez ici la logique de sélection
-                  },
-                  // Ajoutez ici les valeurs pour les options
-                  items: [],
-                ),
-            */
-
-             SizedBox(height: 24),
-                Text(
-                  'Sélectionner Lieu de Chargement :',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF112F33),
-                  ),
-                ),
-                SizedBox(height: 8),
-                // Input pour sélectionner une voiture
-                DropdownButton<String>(
-                  value: selectedLieuChargement,
-                  onChanged: (value)
-                    {
-                      setState(() {
-                        selectedLieuChargement = value;
-                      });
-                      //implémenter logique de séléction
-            
-                    },
-                    // ajouter ici les valeurs pour les options
-            
-                    items: List.generate(5, (index) {
-                      return DropdownMenuItem<String>(
-                        value: 'LieuDeChargement ${index +1}',
-                        child: Text('LieuDeChargement ${index + 1}'),
-                      );
-                      }),
-                    ),
-                    /*
-                  // Ajoutez ici les options pour sélectionner une voiture
-                  onChanged: (value) {
-                    // Implémentez ici la logique de sélection
-                  },
-                  // Ajoutez ici les valeurs pour les options
-                  items: [],
-                ),
-            */
-
+                        'Lieu Départ:',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 99, 151, 158),
+                        ),
+                      ),
+                      Container(
+                        child: DropdownButtonFormField<LieuChargement>(
+                          value: null,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedLieuChargement = value!.codeLieuCharg.toString();
+                              widget.codeLieuDepart = value.codeLieuCharg.toString();
+                              //selectedTitreDesignation = value.designation; 
+                              print('Selected Lieu de chargement: ${selectedLieuChargement}');
+                              fetchDistance();
+                            });
+                          },
+                          items: lieudechargements.map((LieuChargement depart) {
+                            return DropdownMenuItem<LieuChargement>(
+                              value: depart,
+                              child: Text(depart.desigLieuCharg),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+/////////////////////////////////////////////////////  Choix lieu de déchargement /////////////////////////////////
             SizedBox(height: 24),
+                  Text(
+                        'Lieu arrivé :',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF112F33),
+                        ),
+                      ),
+                      Container(
+                        child: DropdownButtonFormField<LieuDechargement>(
+                          value: null,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedLieuDechargement = value!.codeLieudeCharg.toString();
+                              widget.codeLieuArrive = value.codeLieudeCharg.toString();
+                              print('Selected lieu de déchargement: ${selectedLieuDechargement}');
+                              fetchDistance();
+                            });
+                          },
+                          items: lieudedechargements.map((LieuDechargement arrive) {
+                            return DropdownMenuItem<LieuDechargement>(
+                              value: arrive,
+                              child: Text(arrive.desigLieudeCharg),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+/////////////////////////////////////////////////   CHOIX DE DISTANCE //////////////////////////////////
+                    SizedBox(height: 24),
                 Text(
-                  'Sélectionner Lieu de Déchargement :',
+                        'Distance en Km :',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF112F33),
+                        ),
+                      ),
+                      Container(
+                        child: DropdownButtonFormField<FaLieuDistance>(
+                          value: null,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedDistance = value!.kmDistance.toString();
+                              print('Selected distance: ${selectedDistance}');
+                            });
+                          },
+                          items: distances.map((FaLieuDistance kmDistance) {
+                            return DropdownMenuItem<FaLieuDistance>(
+                              value: kmDistance,
+                              child: Text(kmDistance.kmDistance.toString()),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+
+                     SizedBox(height: 24),
+                Text(
+                  ' Région :',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF112F33),
                   ),
                 ),
-                SizedBox(height: 8),
-                // Input pour sélectionner une voiture
-                DropdownButton<String>(
-                  value: selectedLieuDechargement,
-                  onChanged: (value)
-                    {
-                      setState(() {
-                        selectedLieuDechargement = value;
-                      });
-                      //implémenter logique de séléction
-            
-                    },
-                    // ajouter ici les valeurs pour les options
-            
-                    items: List.generate(5, (index) {
-                      return DropdownMenuItem<String>(
-                        value: 'LieuDeDechargement ${index +1}',
-                        child: Text('LieudeDechargement ${index + 1}'),
-                      );
-                      }),
-                    ),
-                    /*
-                  // Ajoutez ici les options pour sélectionner une voiture
-                  onChanged: (value) {
-                    // Implémentez ici la logique de sélection
-                  },
-                  // Ajoutez ici les valeurs pour les options
-                  items: [],
-                ),
-            */
-            Row(
-                children: [
-                  Text('Aller S/R chargé',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    color: Color(0xFF112F33),
-                  ),
-                  ),
-                  SizedBox(width: 10),
-                  Checkbox(
-                    value: allerSRChargeSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        allerSRChargeSelected = value!;
-                        if (value == true) {
-                          retourSRChargeSelected = false;
-                        }
-                      });
-                    },
-                  ),
-                  
-                  SizedBox(width: 16),
-                  Text('Aller S/R Vide',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    color: Color(0xFF112F33),
 
-                  ),),
-                  SizedBox(width: 16),
-                  Checkbox(
-                    value: allerSRVideSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        allerSRVideSelected = value!;
-                        if (value == true){
-                          allerSRChargeSelected = false;
-                        }
-                      });
-                    },
-                  ),
-                ],
-              ),
-//////////////////////////////////////////////////////////////////
-              SizedBox(height: 16),
-               Row(
-                children: [
-                  Text('Retour S/R chargé',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    color: Color(0xFF112F33),
-                  ),
-                  ),
-                  SizedBox(width: 10),
-                  Checkbox(
-                    value: retourSRChargeSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        retourSRChargeSelected = value!;
-                        if (value == true){
-                          retourSRVideSelected = false;
-                        }
-                      });
-                    },
-                  ),
-                  
-                  SizedBox(width: 16),
-                  Text('Retour S/R Vide',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    color: Color(0xFF112F33),
-
-                  ),
-                  ),
-                  
-                  SizedBox(width: 16),
-                  Checkbox(
-                    value: retourSRVideSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        retourSRVideSelected = value!;
-                        if ( value == true) {
-                          retourSRChargeSelected = false;
-                        }
-                      });
-                    },
-                  ),
-                ],
-              ),
-///////////////////////////////////////////////////////////////
-              SizedBox(height: 16),
-               Row(
-                children: [
-                  Text('Aller en Solo',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    color: Color(0xFF112F33),
-                  ),
-                  ),
-                  SizedBox(width: 10),
-                  Checkbox(
-                    value: allerSoloSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        allerSoloSelected = value!;
-                        
-                        
-                      });
-                    },
-                  ),
-                  
-                  SizedBox(width: 16),
-                  Text('Retour en Solo',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    color: Color(0xFF112F33),
-
-                  ),),
-                  SizedBox(width: 16),
-                  Checkbox(
-                    value: allerSoloSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        allerSoloSelected = value!;
-                      });
-                    },
-                  ),
-                ],
-              ),
-
+                
+               
+   
               SizedBox(height: 16),
               Container(
                 alignment: Alignment.bottomCenter,

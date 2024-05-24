@@ -2,7 +2,6 @@ class CkEnteteFiche {
   
   final int codeT;
   final int codeType;
-  
   final int version;
 
   CkEnteteFiche({

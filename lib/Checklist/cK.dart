@@ -14,7 +14,7 @@ class Ck extends StatefulWidget {
    String date;
    String time;
    String? codeT;
- String? codeType;
+   String? codeType;
 
     Ck({
     Key? key,
@@ -406,8 +406,10 @@ String formatTime(TimeOfDay time) {
                           }).toList(),
                         ),
                       ),
+
+
                       SizedBox(height: 24),
-                      Text(
+                      const Text(
                         'Selectionner un exécutant :',
                         style: TextStyle(
                           fontSize: 18,

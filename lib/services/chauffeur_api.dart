@@ -1,12 +1,12 @@
 import 'dart:convert';
-import 'package:firstparc/Models/remorque.dart';
+import 'package:firstparc/Models/chauffeur.dart';
 import 'package:http/http.dart' as http;
 
 
-class RemorqueApi {
-  Future<List<String>> fetchRemorques() async {
+class ChauffeurApi {
+  Future<List<String>> fetchChauffeurs() async {
     try {
-      final uri = Uri.parse('https://10.0.2.2:7116/api/Remorques');
+      final uri = Uri.parse('https://10.0.2.2:7116/api/Chauffeurs');
       final response = await http.get(
         uri,
         headers: {
@@ -18,14 +18,14 @@ class RemorqueApi {
 
       if (response.statusCode == 200){
         final List<dynamic> jsonData = jsonDecode(response.body);
-        List<Remorque> remorqueList = 
-        jsonData.map((json) => Remorque.fromJson(json)).toList();
-        List<String> matriculeremorque = remorqueList
-        .map((remorque) => remorque.matriculeRem)
+        List<Chauffeur> chauffeurList = 
+        jsonData.map((json) => Chauffeur.fromJson(json)).toList();
+        List<String> chauffeurNames = chauffeurList
+        .map((chauffeur) => '${chauffeur.prenomC} ${chauffeur.nomC}' )
         .toList();
-        return matriculeremorque;
+        return chauffeurNames;
       } else {
-        print('Erreur lors de la récupération des véhicules : ${response.statusCode}');
+        print('Erreur lors de la récupération des chauffeurs : ${response.statusCode}');
         print('Réponse du serveur : ${response.body}');
         return [];
       }

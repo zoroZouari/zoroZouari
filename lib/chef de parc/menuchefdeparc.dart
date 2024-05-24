@@ -1,4 +1,3 @@
-
 import 'package:firstparc/config/app_routes.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +13,6 @@ class CustomBox extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.4, // Définir la largeur à 40% de la largeur de l'écran
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -32,13 +30,17 @@ class CustomBox extends StatelessWidget {
           children: [
             Icon(icon, size: 60),
             SizedBox(height: 10),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            Flexible(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center, // Alignement du texte au centre
+                maxLines: 2, // Limiter le nombre de lignes de texte
+                overflow: TextOverflow.ellipsis, // Ajouter des points de suspension si le texte est trop long
               ),
-              textAlign: TextAlign.center, // Alignement du texte au centre
             ),
           ],
         ),
@@ -71,7 +73,7 @@ class _MenuChefDeParcState extends State<MenuChefDeParc> {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
           child: Stack(
             children: [
-              //avatar in the top left corner
+              // Avatar in the top right corner
               Positioned(
                 top: 0,
                 right: 0,
@@ -94,8 +96,7 @@ class _MenuChefDeParcState extends State<MenuChefDeParc> {
                           icon: Icon(Icons.edit), // icone de modif profil
                           onPressed: () {
                             // Action à effectuer lorsque l'icône de modification de profil est cliquée
-                            Navigator.pushNamed(context,
-                             AppRoutes.profil_page,);
+                            Navigator.pushNamed(context, AppRoutes.profil_page);
                           },
                         ),
                       ),
@@ -107,7 +108,7 @@ class _MenuChefDeParcState extends State<MenuChefDeParc> {
                           icon: Icon(Icons.logout), // icone pour se déconnecter
                           onPressed: () {
                             // Action à effectuer lorsque l'icône de déconnexion est cliquée
-                             Navigator.pushNamed(context, AppRoutes.login_page);
+                            Navigator.pushNamed(context, AppRoutes.login_page);
                           },
                         ),
                       ),
@@ -115,33 +116,55 @@ class _MenuChefDeParcState extends State<MenuChefDeParc> {
                   ),
                 ),
               Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomBox(
-                      icon: Icons.checklist_rtl_sharp,
-                      text: 'Check List',
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.menu_ck);
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    CustomBox(
-                      icon: Icons.car_crash_outlined,
-                      text: 'Ordre Réparation',
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.historique_ordre);
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    CustomBox(
-                      icon: Icons.add_road_sharp,
-                      text: 'Mission',
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.menu_mission);
-                      },
-                    ),
-                  ],
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8, // Limiter la largeur de la grille
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
+                    shrinkWrap: true, // Important to use this to limit the grid's height
+                    children: [
+                      CustomBox(
+                        icon: Icons.checklist_rtl_sharp,
+                        text: 'Check List',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.cK);
+                        },
+                      ),
+                       CustomBox(
+                        icon: Icons.history,
+                        text: 'Historique Check List',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.historique_ck);
+                        },
+                      ),
+
+                       CustomBox(
+                        icon: Icons.add_road_sharp,
+                        text: 'Mission',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.mission_form);
+                        },
+                      ),
+
+                      CustomBox(
+                        icon: Icons.history,
+                        text: 'Historique Mission',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.historique_mission);
+                        },
+                      ),
+
+                      CustomBox(
+                        icon: Icons.car_crash_outlined,
+                        text: 'Ordre Réparation',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.historique_ordre);
+                        },
+                      ),
+                     
+                    ],
+                  ),
                 ),
               ),
             ],

@@ -1,3 +1,4 @@
+import 'package:firstparc/Models/CkTitres.dart';
 import 'package:firstparc/Models/ckEnteteCk.dart';
 import 'package:firstparc/Models/ckLigneCk.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,12 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
   bool showMenu = false;
   bool searchPerformed = false;
   List<CkEnteteCk> searchResults = [];
+   List<CkTitres> ckTitres = [];
+ @override
+  void initState() {
+    super.initState();
+    fetchCkTitres();
+  }
 
   Future<void> _fetchData() async {
     if (startDate != null && endDate != null) {
@@ -38,6 +45,7 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
       }
     }
   }
+   
 
   void _navigateToDetails(CkEnteteCk ckEnteteCk) async {
     try {
@@ -63,6 +71,44 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
     }
   }
 
+
+ Future<void> fetchCkTitres() async {
+  var url = Uri.parse('https://10.0.2.2:7116/api/CkTitres/GetDesignationByCodeT/');
+
+  try {
+    http.Response response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as List<dynamic>;
+      setState(() {
+        ckTitres = data.map((json) => CkTitres.fromJson(json)).toList();
+      });
+      print('ckTitres fetched successfully: $ckTitres');
+    } else {
+      print('Failed to load ckTitres: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Erreur lors de la récupération des données de CkTitre : $e');
+  }
+}
+
+
+String _getDesignationForCodeT(int codeT) {
+  final ckTitre = ckTitres.firstWhere(
+    (element) => element.codeT == codeT,
+    orElse: () {
+      print('Designation not found for codeT: $codeT');
+      return CkTitres(designation: 'Non trouvé', codeT: codeT);
+    },
+  );
+  print('Designation found for codeT $codeT: ${ckTitre.designation}');
+  return ckTitre.designation;
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -239,7 +285,7 @@ class _HistoriqueCkState extends State<HistoriqueCk> {
                               ),
                             ),
                             Text(
-                              'Titre: ${ckEnteteCk.codeT}',
+                               _getDesignationForCodeT (ckEnteteCk.codeT),
                               style: TextStyle(
                                 color: Color(0xFF112F33),
                                 fontWeight: FontWeight.bold,
