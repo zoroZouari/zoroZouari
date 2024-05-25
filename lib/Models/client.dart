@@ -27,4 +27,6 @@ return Client(
   );
   
  }
+  @override
+ String toString()=>intituleClient;
 }

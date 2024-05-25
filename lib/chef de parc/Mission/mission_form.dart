@@ -2,17 +2,20 @@
 import 'dart:convert';
 
 import 'package:firstparc/Models/FaLieuDistance.dart';
+import 'package:firstparc/Models/client.dart';
 import 'package:firstparc/Models/lieuChargement.dart';
 import 'package:firstparc/Models/lieuDechargement.dart';
+import 'package:firstparc/Models/mission.dart';
 import 'package:firstparc/config/app_routes.dart';
 import 'package:firstparc/services/chauffeur_api.dart';
-import 'package:firstparc/services/client_api.dart';
+
 import 'package:firstparc/services/region_api.dart';
 import 'package:firstparc/services/remorque_api.dart';
 import 'package:firstparc/services/unite_api.dart';
 import 'package:firstparc/services/vehicule_api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http ;
+import 'package:intl/intl.dart';
 
 class MissionForm extends StatefulWidget {
   String? codeLieuDepart;
@@ -29,7 +32,19 @@ class MissionForm extends StatefulWidget {
 
 class _MissionFormState extends State<MissionForm> {
 
+   String _nbtValue = '';
+  String _nbRecepValue = '';
+
+   DateTime _selectedDate = DateTime.now();
+   DateTime _selectedDate1 = DateTime.now();
+
+   DateTime _selectedDateD = DateTime.now();
+   DateTime _selectedDateF = DateTime.now();
+
+
+
   String? selectedMissionType;
+  int? selectedEtatMission;
   DateTime? startDate;
   DateTime? endDate;
   TimeOfDay? startTime;
@@ -44,17 +59,19 @@ class _MissionFormState extends State<MissionForm> {
   String? selectedUnite; 
   String? selectedDistance;
   String? selectedRegion;
+ 
 
 
    List<String> chauffeurNames = []; // liste des chauffeurs
    List<String> vehicules = []; // Liste des véhicules
    List<String> remorques = []; // Liste des remorques
-   List<String> clients = []; // Liste des clients
+   List<Client> clients = []; // Liste des clients
    List<String> unites = []; // Liste des unités
    List<LieuChargement> lieudechargements = []; // liste des lieux de chargements
    List<LieuDechargement> lieudedechargements = []; // liste des lieux de déchargements
    List<FaLieuDistance> distances = []; // Liste des distances
    List<String> regions = []; // Liste des régions
+   List<Mission> btvalues = [];
  
    
 @override
@@ -67,11 +84,8 @@ class _MissionFormState extends State<MissionForm> {
     fetchLieuxChargements();
     fetchLieuxDeChargements();
     fetchRegions();
-    
-
-
+    fetchAndIncrementBtValues();
   
-    
     // Initialisation de la date et de l'heure actuelles
     startDate = DateTime.now();
     startTime = TimeOfDay.now();
@@ -102,12 +116,34 @@ class _MissionFormState extends State<MissionForm> {
     });
   }
   /////////////////////////////////// FETCH CLIENTS ////////////////////////////////////////////////////
-   Future<void> fetchClients() async {
-    ClientApi clientApi = ClientApi();
-    List<String> nomClient = await clientApi.fetchClients();
-    setState(() {
-      clients = nomClient;
-    });
+  //  Future<void> fetchClients() async {
+  //   ClientApi clientApi = ClientApi();
+  //   List<String> nomClient = await clientApi.fetchClients();
+  //   setState(() {
+  //     clients = nomClient;
+  //   });
+  // }
+  // Fonction pour récupérer les lieux depuis l'API
+  Future<void> fetchClients() async {
+    var url = Uri.parse('https://10.0.2.2:7116/api/Clients');
+    print(url);
+    try {
+      http.Response response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        setState(() {
+          clients = data.map((json) => Client.fromJson(json)).toList();
+        });
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des lieux de chargements : $e');
+    }
   }
   ///////////////////////////////////////// Fetch Unité        //////////////////////////////////////////
   Future<void> fetchUnites() async {
@@ -117,7 +153,7 @@ class _MissionFormState extends State<MissionForm> {
       unites = desigUnite;
     });
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////  RECUPERER LIEUX CHARGEMENTS             ///////////////////////////////////////////////////////////
   // Fonction pour récupérer les lieux depuis l'API
   Future<void> fetchLieuxChargements() async {
     var url = Uri.parse('https://10.0.2.2:7116/api/LieuChargements');
@@ -162,7 +198,7 @@ class _MissionFormState extends State<MissionForm> {
       print('Erreur lors de la récupération des lieux de déchargements : $e');
     }
   }
-  //////////////////////////////////////// FETCH DISTANCE KM      //////////////////////////////////////////
+  ////////////////////////////////////////      FETCH DISTANCE KM      //////////////////////////////////////////
    // Fonction pour récupérer les versions depuis l'API
   Future<void> fetchDistance() async {
     
@@ -197,9 +233,144 @@ class _MissionFormState extends State<MissionForm> {
       regions = desigregion;
     });
   }
-  /////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+   Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate)
+      setState(() {
+        _selectedDate = picked;
+        print(_selectedDate);
+      });
+  }
+
+   Future<void> _selectDate1(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate1,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate1)
+      setState(() {
+        _selectedDate1 = picked;
+        print(_selectedDate1);
+      });
+  }
+  //////////////////////// DATE DEBUT /////////////////////////////////////////////
+   Future<void> _selectDateD(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDateD,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null && pickedDate != _selectedDateD) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(_selectedDateD),
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedDateD = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+          
+        });
+         print('Contenu de _selectedDateD: $_selectedDateD');
+      }
+    }
+  }
+  //////////////////////////////////////// DATE FIN /////////////////////////////////////
+  Future<void> _selectDateF(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDateF,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null && pickedDate != _selectedDateF) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(_selectedDateF),
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedDateF = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+          
+        });
+        print('Contenu de _selectedDateF: $_selectedDateF');
+      }
+    }
+  }
+
+  ///////////////////////////////////////////     RECUPERER BT_N_DOC ET BT_N_RECU             //////////////////////////////////////////////////////
+  Future<void> fetchAndIncrementBtValues() async {
+    
+     
+       var url = Uri.parse('https://10.0.2.2:7116/api/Missions/LastBtNdocAndBtNrecu');
+      
+       print(url);
+       try {
+        http.Response response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+       print(response.body);
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final mission = Mission.fromJson(jsonData);
+
+        // Parse values and increment
+        int lastBtNdoc = int.tryParse(mission.btNdoc) ?? 0;
+        int lastBtNrecu = int.tryParse(mission.btNrecu) ?? 0;
+
+        int newBtNdoc = lastBtNdoc + 1;
+        int newBtNrecu = lastBtNrecu + 1;
+
+        setState(() {
+           _nbtValue = newBtNdoc.toString();
+           _nbRecepValue = newBtNrecu.toString();
+           print(_nbtValue);
+           print(_nbRecepValue);
+        });
+      } else {
+        throw Exception('Failed to load data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+      // Handle error, e.g., show a snackbar or alert dialog
+    }
+  }
+  ///
   @override
   Widget build(BuildContext context) {
+
+    String formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    String formattedDate1 = DateFormat('yyyy-MM-dd').format(_selectedDate1);
+    String formattedDateD = DateFormat('yyyy-MM-dd     HH:mm').format(_selectedDateD);
+    String formattedDateF = DateFormat('yyyy-MM-dd     HH:mm').format(_selectedDateF);
+    
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: Padding(
@@ -214,7 +385,7 @@ class _MissionFormState extends State<MissionForm> {
                   Navigator.pop(context);
                 },
               ),
-
+////////////////////////////////////////////////   CHOIX MISSION //////////////////////////////////////////
               SizedBox(height: 16),
               Text('Type mission :',
               style: TextStyle(
@@ -227,88 +398,101 @@ class _MissionFormState extends State<MissionForm> {
                 onChanged: (value) {
                   setState(() {
                     selectedMissionType = value;
+                    print(selectedMissionType);
                   });
                 },
                 items: [
                   DropdownMenuItem<String>(
-                    value: 'Exploitation',
-                    child: Text('Exploitation'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'Entretien',
-                    child: Text('Entretien'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'Ordre Mission',
-                    child: Text('Ordre Mission'),
+                    value: 'Transport',
+                    child: Text('Transport'),
+                    
                   ),
                 ],
               ),
-              
-              SizedBox(height: 8),
-                Row(
-                  children: [
-                    Text(
-                      'Date du début :',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Color(0xFF112F33),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    ElevatedButton(onPressed: () async {
-                      final pickedStartDate = await showDatePicker(
-                        context: context,
-                        initialDate: startDate ?? DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime.now(),
-                        );
-                        if (pickedStartDate != null) {
-                          setState(() {
-                            startDate = pickedStartDate;
-                          });
-                        }
-                    },
-                     child: Text(startDate != null
-                     ? '${startDate!.day}/${startDate!.month}/${startDate!.year}'
-                     :'Choisir',
-                     ),
-                     ),
-                  ],
+//////////////////////////////////////// STATUT MISSION ///////////////////////////////////////////
+              SizedBox(height: 16),
+              Text('Statut Mission ',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Color(0xFF112F33),
+              ),),
+              DropdownButton<int>(
+                value: selectedEtatMission,
+                onChanged: (value) {
+                  setState(() {
+                    selectedEtatMission = value;
+                    print(selectedEtatMission);
+                  });
+                },
+                items: [
+                  DropdownMenuItem<int>(
+                    value: 0,
+                    child: Text('En cours'),
+                    
                   ),
-                  SizedBox(height:8),
-                  Row(
-                    children: [
-                      Text(
-                        'Date de fin :',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Color(0xFF112F33),
-                        ),
-                        ),
-                        SizedBox(width: 22),
-                        ElevatedButton(onPressed: () async {
-                          final pickedEndDate = await showDatePicker(
-                            context: context,
-                             initialDate: endDate ?? DateTime.now(),
-                             firstDate: DateTime(2000),
-                             lastDate: DateTime.now(),
-                             );
-                             if (pickedEndDate != null) {
-                              setState(() {
-                                endDate = pickedEndDate;
-                              });
-                             }    
-                        }, 
-                        child: Text(endDate != null
-                        ? '${endDate!.day}/${endDate!.month}/${endDate!.year}'
-                        : 'Choisir',
-                        ),
-                        ),
-                  ],
-                  ),
+                ],
+              ),
+ /////////////////////////////////////////////   CHOISIR DATE DEBUT               ////////////////////////////////////             
+              SizedBox(height: 16),
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'Date Début:',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF112F33),
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: Row(
+            children: [
+              Text(
+                formattedDateD,
+                style: TextStyle(fontSize: 16),
+              ),
+              IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () => _selectDateD(context),
+                
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+                   SizedBox(height: 16),
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'Date Fin:',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF112F33),
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: Row(
+            children: [
+              Text(
+                formattedDateF,
+                style: TextStyle(fontSize: 16),
+              ),
+              IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () => _selectDateF(context),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
                   SizedBox(height: 8),
                   Row(
                    children: [
@@ -347,6 +531,7 @@ class _MissionFormState extends State<MissionForm> {
     ),
   ],
 ),
+//////////////////////////////////////////  CHOISIR DATE FIN //////////////////////////////////
 SizedBox(height: 8),
 Row(
   children: [
@@ -387,41 +572,41 @@ Row(
 ),
 ///////////////////////////////////   Clients //////////////////////////////////////////////////
               SizedBox(height: 24),
-                const Text(
-                        'Client :',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF112F33),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButton<String>(
-                          value: selectedClient,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedClient = value;
-                              print('Selected client: $selectedClient');
-                            });
-                          },
-                          items: clients.map((String client) {
-                            return DropdownMenuItem<String>(
-                              value: client,
-                              child: Text(client),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                 const Text(
+          'Client ',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF112F33),
+          ),
+        ),
+        SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: Colors.black),
+            color: Colors.white,
+          ),
+          child: DropdownButton<String>(
+            value: selectedClient,
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedClient = newValue;
+                print('Selected client code: $selectedClient');
+              });
+            },
+            items: clients.map((Client client) {
+              return DropdownMenuItem<String>(
+                value: client.codeCl.toString(),
+                child: Text(client.intituleClient),
+              );
+            }).toList(),
+          ),
+        ),
   /////////////////////////////////////////////////  Choix De véhicule //////////////////////////////
             SizedBox(height: 24),
                Text(
-                        'Sélectionner une voiture :',
+                        'Sélectionner une voiture ',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -454,7 +639,7 @@ Row(
 //////////////////////////////////////////////////   REMORQUES BOX ///////////////////////////////////////
                     SizedBox(height: 24),
                 Text(
-                        'Selectionner Remorque :',
+                        'Selectionner Remorque ',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -487,7 +672,7 @@ Row(
  ///////////////////////////////////////////////  choix chauffeur /////////////////////////////////////////////             
               SizedBox(height: 24),
                 const Text(
-                        'Chauffeur :',
+                        'Chauffeur ',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -669,10 +854,121 @@ Row(
                           }).toList(),
                         ),
                       ),
-
-                
-               
-   
+//////////////////////////////////////////////       BT       /////////////////////////////////////////////////////////
+      SizedBox(height: 24),
+    SizedBox(height: 24),
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'N BT',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF112F33),
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+            decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                     child: Text(
+                      _nbtValue,
+                      style: TextStyle(fontSize: 16),
+                    ),
+          ),
+        ),
+      ],
+    ),
+    SizedBox(height: 16),
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'Date BT:',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF112F33),
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: Row(
+            children: [
+              Text(
+                formattedDate,
+                style: TextStyle(fontSize: 16),
+              ),
+              IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () => _selectDate(context),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+    SizedBox(height: 24),
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'N Bon de Réception',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF112F33),
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: Container(
+           padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+           decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                     child: Text(
+                      _nbRecepValue,
+                      style: TextStyle(fontSize: 16),
+                    ),
+          ),
+        ),
+      ],
+    ),
+    SizedBox(height: 16),
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'Date B. Réception:',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF112F33),
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: Row(
+            children: [
+              Text(
+                formattedDate1,
+                style: TextStyle(fontSize: 16),
+              ),
+              IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () => _selectDate1(context),
+              ),
+            ],
+          ),),],),
+        
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
               SizedBox(height: 16),
               Container(
                 alignment: Alignment.bottomCenter,
@@ -690,7 +986,7 @@ Row(
                   ),
                 ),
               ),
-              
+          
             ],
           ),
         ),
