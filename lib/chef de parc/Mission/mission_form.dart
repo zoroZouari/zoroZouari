@@ -124,14 +124,6 @@ class _MissionFormState extends State<MissionForm> {
     });
   }
   /////////////////////////////////// FETCH CLIENTS ////////////////////////////////////////////////////
-  //  Future<void> fetchClients() async {
-  //   ClientApi clientApi = ClientApi();
-  //   List<String> nomClient = await clientApi.fetchClients();
-  //   setState(() {
-  //     clients = nomClient;
-  //   });
-  // }
-  // Fonction pour récupérer les lieux depuis l'API
   Future<void> fetchClients() async {
     var url = Uri.parse('https://10.0.2.2:7116/api/Clients');
     print(url);
