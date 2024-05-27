@@ -7,7 +7,6 @@ import 'package:firstparc/Models/client.dart';
 import 'package:firstparc/Models/lieuChargement.dart';
 import 'package:firstparc/Models/lieuDechargement.dart';
 import 'package:firstparc/Models/mission.dart';
-import 'package:firstparc/config/app_routes.dart';
 import 'package:firstparc/services/chauffeur_api.dart';
 
 import 'package:firstparc/services/region_api.dart';
@@ -18,22 +17,24 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http ;
 import 'package:intl/intl.dart';
 
-class MissionForm extends StatefulWidget {
-  String? codeLieuDepart;
-  String? codeLieuArrive;
-  int codeMiss;
+class MissionDetailsPage extends StatefulWidget {
+ final Mission mission;
+ final List<Mission> missiona;
 
-   MissionForm({Key? key,
-  this.codeLieuArrive,
-  this.codeLieuDepart,
-  this.codeMiss =0,
+
+
+   MissionDetailsPage({Key? key,
+   required this.mission,
+   required this.missiona,
+
+  
   }) : super(key: key);
 
   @override
-  State<MissionForm> createState() => _MissionFormState();
+  State<MissionDetailsPage> createState() => _MissionDetailsPageState();
 }
 
-class _MissionFormState extends State<MissionForm> {
+class _MissionDetailsPageState extends State<MissionDetailsPage> {
 
    String _nbtValue = '';
   String _nbRecepValue = '';
@@ -89,6 +90,19 @@ class _MissionFormState extends State<MissionForm> {
     fetchLieuxDeChargements();
     fetchRegions();
     fetchAndIncrementBtValues();
+        Mission? xClient = widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+    selectedClient = xClient.tCodeCl.toString();
+
+        Mission? xRegion = widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+    selectedRegion = xRegion.codeReg.toString();
   
     // Initialisation de la date et de l'heure actuelles
     startDate = DateTime.now();
@@ -208,31 +222,31 @@ class _MissionFormState extends State<MissionForm> {
   }
   ////////////////////////////////////////      FETCH DISTANCE KM      //////////////////////////////////////////
    // Fonction pour récupérer les versions depuis l'API
-  Future<void> fetchDistance() async {
+  // Future<void> fetchDistance() async {
     
-    var url = Uri.parse('https://10.0.2.2:7116/api/FaLieuDistances/${widget.codeLieuDepart}/${widget.codeLieuArrive}');
+  //   var url = Uri.parse('https://10.0.2.2:7116/api/FaLieuDistances/${widget.codeLieuDepart}/${widget.codeLieuArrive}');
 
-    print(url);
+  //   print(url);
 
-    try {
-      http.Response response = await http.get(
-        url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
+  //   try {
+  //     http.Response response = await http.get(
+  //       url,
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //     );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as List<dynamic>;
-        print(response.body);
-        setState(() {
-          distances = data.map((json) => FaLieuDistance.fromJson(json)).toList();
-        });
-      }
-    } catch (e) {
-      print('Erreur lors de la récupération des distances : $e');
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body) as List<dynamic>;
+  //       print(response.body);
+  //       setState(() {
+  //         distances = data.map((json) => FaLieuDistance.fromJson(json)).toList();
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Erreur lors de la récupération des distances : $e');
+  //   }
+  // }
   /////////////////////////////////////// Choix Region   ////////////////////////////////////////////
   Future<void> fetchRegions() async {
     RegionApi regionApi = RegionApi();
@@ -370,53 +384,43 @@ class _MissionFormState extends State<MissionForm> {
       // Handle error, e.g., show a snackbar or alert dialog
     }
   }
-  ///////////////////////////////////////////// SAUVEGARDER LES DONNEES /////////////////////////////////////////
-  Future<void> saveDataMission() async {
-  var url = Uri.parse('https://10.0.2.2:7116/api/Missions');
-  print(url);
+  /////////////////////////////////// MISE A JOUR ETAT MISSION //////////////////////////
+ Future<void> updateMission(int codeMiss, int newStatut) async {
+  final url = 'http://10.0.2.2/7116/api/Missions/$codeMiss';
+  
+  final response = await http.put(
+    Uri.parse(url),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'statutMiss': newStatut,
+      // Ajoutez ici les autres champs de la mission que vous souhaitez mettre à jour
+    }),
+  );
 
-
-  try {
-    http.Response response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'codeMiss': widget.codeMiss,
-        'codeVeh': selectedVehicule,
-        'matriculeRem': selectedRemorque,
-        'depart': _selectedDateD,
-        'arrive': _selectedDateF,
-        'codeChauff': selectedChauffeur,
-        'tCodeCl': selectedClient, 
-        'tLieuChargement': selectedLieuChargement,
-        'tLieuDechargement': selectedLieuDechargement,
-        'statutMiss': selectedEtatMission,
-        'btNdoc' : _nbtValue,
-        'lieu': _selectedDate,
-        'btNrecu' : _nbRecepValue,
-        'information' : _selectedDate1,
-        'typeMissionTransport' : selectedMissionType,
-
-
-
-      }),
-    );
-    print(response.body);
-    if (response.statusCode == 201) {
-      Navigator.pushNamed(context, AppRoutes.mission_affecte,);
-      print('Enregistrement réussi');
-      print(response.body);
-    } else {
-      print('Échec de l\'enregistrement : ${response.statusCode}');
-      print(response.body);
-    }
-  } catch (e) { 
-    print('Erreur lors de la requête : $e');
+  if (response.statusCode == 204) {
+    // Succès
+    print('Mission updated successfully');
+  } else {
+    // Erreur
+    print('Failed to update mission. Status code: ${response.statusCode}');
   }
 }
-  ///////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////     SUPPRIMER MISSION                  ///////////////////////////////////////
+  void deleteMission(int codeMiss) async {
+  final url = Uri.parse('http://your-api-url/api/Missions/$codeMiss');
+  final response = await http.delete(url);
+
+  if (response.statusCode == 204) {
+    // Mission deleted successfully
+    print('Mission deleted successfully');
+  } else {
+    // Handle error
+    print('Failed to delete mission: ${response.statusCode}');
+  }
+}
+  //////////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
 
@@ -424,7 +428,84 @@ class _MissionFormState extends State<MissionForm> {
     String formattedDate1 = DateFormat('yyyy-MM-dd').format(_selectedDate1);
     String formattedDateD = DateFormat('yyyy-MM-dd     HH:mm').format(_selectedDateD);
     String formattedDateF = DateFormat('yyyy-MM-dd     HH:mm').format(_selectedDateF);
-    
+
+     Mission? xMission = widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xEtatMission= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xDepart= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xArriver= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xVehicule= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xRemorque= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? selectedChauffeur= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xLieuCharg= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xLieuDecharg= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xRegion= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xNbt= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xDateNb= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xNbRecu= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xDateNbRecu= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+     Mission? xClient= widget.missiona.firstWhere(
+      (mission) => mission.codeMiss == widget.mission.codeMiss,
+      orElse: () => widget.mission,
+    );
+
+
+
     return Scaffold(
        appBar: AppBar(
         title: Text(
@@ -446,81 +527,40 @@ class _MissionFormState extends State<MissionForm> {
             
 ////////////////////////////////////////////////   CHOIX MISSION //////////////////////////////////////////
               SizedBox(height: 16),
-              Text('Type mission :',
+              Text('Type mission : ${xMission.typeMissionTransport}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
                 color: Color(0xFF112F33),
-              ),),
-              DropdownButton<String>(
-                value: selectedMissionType,
-                onChanged: (value) {
-                  setState(() {
-                    selectedMissionType = value;
-                    print(selectedMissionType);
-                  });
-                },
-                items: [
-                  DropdownMenuItem<String>(
-                    value: 'Transport',
-                    child: Text('Transport'),
-                    
-                  ),
-                ],
               ),
+              ),
+
 //////////////////////////////////////// STATUT MISSION ///////////////////////////////////////////
               SizedBox(height: 16),
-              Text('Statut Mission ',
+              Text('Statut Mission : ${xEtatMission.statutMiss} ',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
                 color: Color(0xFF112F33),
-              ),),
-              DropdownButton<int>(
-                value: selectedEtatMission,
-                onChanged: (value) {
-                  setState(() {
-                    selectedEtatMission = value;
-                    print(selectedEtatMission);
-                  });
-                },
-                items: [
-                  DropdownMenuItem<int>(
-                    value: 0,
-                    child: Text('En cours'),
-                    
-                  ),
-                ],
               ),
+              ),
+             
  /////////////////////////////////////////////   CHOISIR DATE DEBUT               ////////////////////////////////////             
               SizedBox(height: 16),
     Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          'Date Début:',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF112F33),
+        Flexible(
+          child: Text(
+            'Date Début : ${xDepart.depart} ',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF112F33),
+            ),
           ),
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: Row(
-            children: [
-              Text(
-                formattedDateD,
-                style: TextStyle(fontSize: 16),
-              ),
-              IconButton(
-                icon: Icon(Icons.calendar_today),
-                onPressed: () => _selectDateD(context),
-                
-              ),
-            ],
-          ),
-        ),
+      
       ],
     ),
                    SizedBox(height: 16),
@@ -528,34 +568,20 @@ class _MissionFormState extends State<MissionForm> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Date Fin:',
+          'Date Fin : ${xArriver.arriver}',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Color(0xFF112F33),
           ),
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: Row(
-            children: [
-              Text(
-                formattedDateF,
-                style: TextStyle(fontSize: 16),
-              ),
-              IconButton(
-                icon: Icon(Icons.calendar_today),
-                onPressed: () => _selectDateF(context),
-              ),
-            ],
-          ),
-        ),
+       
       ],
     ),
 ///////////////////////////////////   Clients //////////////////////////////////////////////////
               SizedBox(height: 24),
-                 const Text(
-          'Client ',
+                  Text(
+          'Client : ${xClient.tCodeCl}',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -588,225 +614,204 @@ class _MissionFormState extends State<MissionForm> {
   /////////////////////////////////////////////////  Choix De véhicule //////////////////////////////
             SizedBox(height: 24),
                Text(
-                        'Sélectionner une voiture ',
+                        ' Véhicule :${xVehicule.codeVeh}',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF112F33),
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButton<String>(
-                          value: selectedVehicule,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedVehicule = value;
-                              print('Selected vehicule: $selectedVehicule');
-                            });
-                          },
-                          items: vehicules.map((String vehicule) {
-                            return DropdownMenuItem<String>(
-                              value: vehicule,
-                              child: Text(vehicule),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                      // SizedBox(height: 8),
+                      // Container(
+                      //   decoration: BoxDecoration(
+                      //     borderRadius: BorderRadius.circular(5),
+                      //     border: Border.all(color: Colors.black),
+                      //     color: Colors.white,
+                      //   ),
+                      //   child: DropdownButton<String>(
+                      //     value: selectedVehicule,
+                      //     onChanged: (value) {
+                      //       setState(() {
+                      //         selectedVehicule = value;
+                      //         print('Selected vehicule: $selectedVehicule');
+                      //       });
+                      //     },
+                      //     items: vehicules.map((String vehicule) {
+                      //       return DropdownMenuItem<String>(
+                      //         value: vehicule,
+                      //         child: Text(vehicule),
+                      //       );
+                      //     }).toList(),
+                      //   ),
+                      // ),
 //////////////////////////////////////////////////   REMORQUES BOX ///////////////////////////////////////
                     SizedBox(height: 24),
                 Text(
-                        'Selectionner Remorque ',
+                        ' Remorque : ${xRemorque.matriculeRem}',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF112F33),
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButton<String>(
-                          value: selectedRemorque,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedRemorque = value;
-                              print('Selected remorque: $selectedRemorque');
-                            });
-                          },
-                          items: remorques.map((String remorque) {
-                            return DropdownMenuItem<String>(
-                              value: remorque,
-                              child: Text(remorque),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                     
  ///////////////////////////////////////////////  choix chauffeur /////////////////////////////////////////////             
               SizedBox(height: 24),
-                const Text(
-                        'Chauffeur ',
+                 Text(
+                        'Chauffeur : ${selectedChauffeur.codeChauff} ',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF112F33),
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white,
-                        ),
-                         child: DropdownButton<String>(
-            value: selectedChauffeur,
-            onChanged: (value) {
-              setState(() {
-                selectedChauffeur = value;
-                print('Selected chauffeur: $selectedChauffeur');
-              });
-            },
-            items: chauffeurMap.entries.map((entry) {
-              return DropdownMenuItem<String>(
-                value: entry.key,
-                child: Text(entry.value),
-              );
-            }).toList(),
-                        ),
-                      ),
+            //           SizedBox(height: 8),
+            //           Container(
+            //             decoration: BoxDecoration(
+            //               borderRadius: BorderRadius.circular(5),
+            //               border: Border.all(color: Colors.black),
+            //               color: Colors.white,
+            //             ),
+            //              child: DropdownButton<String>(
+            // value: selectedChauffeur,
+            // onChanged: (value) {
+            //   setState(() {
+            //     selectedChauffeur = value;
+            //     print('Selected chauffeur: $selectedChauffeur');
+            //   });
+            // },
+            // items: chauffeurMap.entries.map((entry) {
+            //   return DropdownMenuItem<String>(
+            //     value: entry.key,
+            //     child: Text(entry.value),
+            //   );
+            // }).toList(),
+            //             ),
+            //           ),
 /////////////////////////////////////////////////  Choix Unité /////////////////////////////////////////
-             SizedBox(height: 24),
-                 const Text(
-                        'Unité :',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF112F33),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButton<String>(
-                          value: selectedUnite,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedUnite = value;
-                              print('Selected Unité: $selectedUnite');
-                            });
-                          },
-                          items: unites.map((String unite) {
-                            return DropdownMenuItem<String>(
-                              value: unite,
-                              child: Text(unite),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+            //  SizedBox(height: 24),
+            //      const Text(
+            //             'Unité :',
+            //             style: TextStyle(
+            //               fontSize: 18,
+            //               fontWeight: FontWeight.bold,
+            //               color: Color(0xFF112F33),
+            //             ),
+            //           ),
+                      // SizedBox(height: 8),
+                      // Container(
+                      //   decoration: BoxDecoration(
+                      //     borderRadius: BorderRadius.circular(5),
+                      //     border: Border.all(color: Colors.black),
+                      //     color: Colors.white,
+                      //   ),
+                      //   child: DropdownButton<String>(
+                      //     value: selectedUnite,
+                      //     onChanged: (value) {
+                      //       setState(() {
+                      //         selectedUnite = value;
+                      //         print('Selected Unité: $selectedUnite');
+                      //       });
+                      //     },
+                      //     items: unites.map((String unite) {
+                      //       return DropdownMenuItem<String>(
+                      //         value: unite,
+                      //         child: Text(unite),
+                      //       );
+                      //     }).toList(),
+                      //   ),
+                      // ),
   /////////////////////////////////////////// CHOIX LIEU DEPART //////////////////////////////////////////
              SizedBox(height: 24),
                 Text(
-                        'Lieu Départ:',
+                        'Lieu Départ: ${xLieuCharg.tLieuChargement}',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 99, 151, 158),
+                          color: Color(0xFF112F33),
                         ),
                       ),
-                      Container(
-                        child: DropdownButtonFormField<LieuChargement>(
-                          value: null,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedLieuChargement = value!.codeLieuCharg.toString();
-                              widget.codeLieuDepart = value.codeLieuCharg.toString();
-                              //selectedTitreDesignation = value.designation; 
-                              print('Selected Lieu de chargement: ${selectedLieuChargement}');
-                              fetchDistance();
-                            });
-                          },
-                          items: lieudechargements.map((LieuChargement depart) {
-                            return DropdownMenuItem<LieuChargement>(
-                              value: depart,
-                              child: Text(depart.desigLieuCharg),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                      // Container(
+                      //   child: DropdownButtonFormField<LieuChargement>(
+                      //     value: null,
+                      //     onChanged: (value) {
+                      //       setState(() {
+                      //         selectedLieuChargement = value!.codeLieuCharg.toString();
+                      //         widget.codeLieuDepart = value.codeLieuCharg.toString();
+                      //         //selectedTitreDesignation = value.designation; 
+                      //         print('Selected Lieu de chargement: ${selectedLieuChargement}');
+                      //         fetchDistance();
+                      //       });
+                      //     },
+                      //     items: lieudechargements.map((LieuChargement depart) {
+                      //       return DropdownMenuItem<LieuChargement>(
+                      //         value: depart,
+                      //         child: Text(depart.desigLieuCharg),
+                      //       );
+                      //     }).toList(),
+                      //   ),
+                      // ),
 /////////////////////////////////////////////////////  Choix lieu de déchargement /////////////////////////////////
             SizedBox(height: 24),
                   Text(
-                        'Lieu arrivé :',
+                        'Lieu arrivé : ${xLieuDecharg.tLieuDechargement}',
+                        //${mission.tLieuDechargement}',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF112F33),
                         ),
                       ),
-                      Container(
-                        child: DropdownButtonFormField<LieuDechargement>(
-                          value: null,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedLieuDechargement = value!.codeLieudeCharg.toString();
-                              widget.codeLieuArrive = value.codeLieudeCharg.toString();
-                              print('Selected lieu de déchargement: ${selectedLieuDechargement}');
-                              fetchDistance();
-                            });
-                          },
-                          items: lieudedechargements.map((LieuDechargement arrive) {
-                            return DropdownMenuItem<LieuDechargement>(
-                              value: arrive,
-                              child: Text(arrive.desigLieudeCharg),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                      // Container(
+                      //   child: DropdownButtonFormField<LieuDechargement>(
+                      //     value: null,
+                      //     onChanged: (value) {
+                      //       setState(() {
+                      //         selectedLieuDechargement = value!.codeLieudeCharg.toString();
+                      //         widget.codeLieuArrive = value.codeLieudeCharg.toString();
+                      //         print('Selected lieu de déchargement: ${selectedLieuDechargement}');
+                      //         fetchDistance();
+                      //       });
+                      //     },
+                      //     items: lieudedechargements.map((LieuDechargement arrive) {
+                      //       return DropdownMenuItem<LieuDechargement>(
+                      //         value: arrive,
+                      //         child: Text(arrive.desigLieudeCharg),
+                      //       );
+                      //     }).toList(),
+                      //   ),
+                      // ),
 /////////////////////////////////////////////////   CHOIX DE DISTANCE //////////////////////////////////
-                    SizedBox(height: 24),
-                Text(
-                        'Distance en Km :',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF112F33),
-                        ),
-                      ),
-                      Container(
-                        child: DropdownButtonFormField<FaLieuDistance>(
-                          value: null,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedDistance = value!.kmDistance.toString();
-                              print('Selected distance: ${selectedDistance}');
-                            });
-                          },
-                          items: distances.map((FaLieuDistance kmDistance) {
-                            return DropdownMenuItem<FaLieuDistance>(
-                              value: kmDistance,
-                              child: Text(kmDistance.kmDistance.toString()),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                //     SizedBox(height: 24),
+                // Text(
+                //         'Distance en Km :',
+                //         style: TextStyle(
+                //           fontSize: 18,
+                //           fontWeight: FontWeight.bold,
+                //           color: Color(0xFF112F33),
+                //         ),
+                //       ),
+                //       Container(
+                //         child: DropdownButtonFormField<FaLieuDistance>(
+                //           value: null,
+                //           onChanged: (value) {
+                //             setState(() {
+                //               selectedDistance = value!.kmDistance.toString();
+                //               print('Selected distance: ${selectedDistance}');
+                //             });
+                //           },
+                //           items: distances.map((FaLieuDistance kmDistance) {
+                //             return DropdownMenuItem<FaLieuDistance>(
+                //               value: kmDistance,
+                //               child: Text(kmDistance.kmDistance.toString()),
+                //             );
+                //           }).toList(),
+                //         ),
+                //       ),
 ///////////////////////////////////////////   CHOIX DE REGION /////////////////////////////////////
                      SizedBox(height: 24),
-                 const Text(
-                        'Région :',
+                  Text(
+                        'Région : ${xRegion.codeReg}',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -822,9 +827,9 @@ class _MissionFormState extends State<MissionForm> {
                         ),
                         child: DropdownButton<String>(
                           value: selectedRegion,
-                          onChanged: (value) {
+                          onChanged: (String? newValue) {
                             setState(() {
-                              selectedRegion = value;
+                              selectedRegion = newValue;
                               print('Selected region: $selectedRegion');
                             });
                           },
@@ -837,33 +842,33 @@ class _MissionFormState extends State<MissionForm> {
                         ),
                       ),
 //////////////////////////////////////////////       BT       /////////////////////////////////////////////////////////
-      SizedBox(height: 24),
+     
     SizedBox(height: 24),
     Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'N BT',
+          'N BT : ${xNbt.btNdoc}',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Color(0xFF112F33),
           ),
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-            decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                     child: Text(
-                      _nbtValue,
-                      style: TextStyle(fontSize: 16),
-                    ),
-          ),
-        ),
+        // SizedBox(width: 16),
+        // Expanded(
+        //   child: Container(
+        //     padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+        //     decoration: BoxDecoration(
+        //               border: Border.all(color: Colors.grey),
+        //               borderRadius: BorderRadius.circular(8.0),
+        //             ),
+        //              child: Text(
+        //               _nbtValue,
+        //               style: TextStyle(fontSize: 16),
+        //             ),
+        //   ),
+        // ),
       ],
     ),
     SizedBox(height: 16),
@@ -871,28 +876,28 @@ class _MissionFormState extends State<MissionForm> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Date BT:',
+          'Date BT: ${xDateNb.information}',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Color(0xFF112F33),
           ),
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: Row(
-            children: [
-              Text(
-                formattedDate,
-                style: TextStyle(fontSize: 16),
-              ),
-              IconButton(
-                icon: Icon(Icons.calendar_today),
-                onPressed: () => _selectDate(context),
-              ),
-            ],
-          ),
-        ),
+        // SizedBox(width: 16),
+        // Expanded(
+        //   child: Row(
+        //     children: [
+        //       Text(
+        //         formattedDate,
+        //         style: TextStyle(fontSize: 16),
+        //       ),
+        //       IconButton(
+        //         icon: Icon(Icons.calendar_today),
+        //         onPressed: () => _selectDate(context),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     ),
     SizedBox(height: 24),
@@ -900,74 +905,101 @@ class _MissionFormState extends State<MissionForm> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'N Bon de Réception',
+          'N Bon de Réception : ${xNbRecu.btNrecu}',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Color(0xFF112F33),
           ),
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: Container(
-           padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-           decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                     child: Text(
-                      _nbRecepValue,
-                      style: TextStyle(fontSize: 16),
-                    ),
-          ),
-        ),
+        // SizedBox(width: 16),
+        // Expanded(
+        //   child: Container(
+        //    padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+        //    decoration: BoxDecoration(
+        //               border: Border.all(color: Colors.grey),
+        //               borderRadius: BorderRadius.circular(8.0),
+        //             ),
+        //              child: Text(
+        //               _nbRecepValue,
+        //               style: TextStyle(fontSize: 16),
+        //             ),
+        //   ),
+        // ),
       ],
     ),
     SizedBox(height: 16),
     Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          'Date B. Réception:',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF112F33),
+        Flexible(
+          child: Text(
+            'Date B. Réception :${xDateNbRecu.lieu}',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF112F33),
+            ),
           ),
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: Row(
-            children: [
-              Text(
-                formattedDate1,
-                style: TextStyle(fontSize: 16),
-              ),
-              IconButton(
-                icon: Icon(Icons.calendar_today),
-                onPressed: () => _selectDate1(context),
-              ),
-            ],
-          ),),],),
+        // SizedBox(width: 16),
+        // Expanded(
+        //   child: Row(
+        //     children: [
+        //       Text(
+        //         formattedDate1,
+        //         style: TextStyle(fontSize: 16),
+        //       ),
+        //       IconButton(
+        //         icon: Icon(Icons.calendar_today),
+        //         onPressed: () => _selectDate1(context),
+        //       ),
+        //     ],
+        //   ),),
+        ],
+        ),
         
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-              SizedBox(height: 16),
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: ElevatedButton(
-                  onPressed: () {
-                    saveDataMission();
-                    
-                  },
-                  child: Text('Valider',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),),
-                  style: ElevatedButton.styleFrom(
-                        primary: Color(0xFF112F33),
-                  ),
-                ),
-              ),
+             SizedBox(height: 16),
+Container(
+  alignment: Alignment.bottomCenter,
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      ElevatedButton(
+        onPressed: () async {
+          // Logique pour valider
+          // await updateMissionEtat(widget.mission.codeMiss, 1);
+        },
+        child: Text(
+          'Valider',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          primary: Color(0xFF112F33),
+        ),
+      ),
+      SizedBox(width: 16), // Espacement entre les boutons
+      ElevatedButton(
+        onPressed: () {
+          // Logique pour supprimer
+          deleteMission(widget.mission.codeMiss);
+        },
+        child: Text(
+          'Supprimer',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          primary: Colors.red,
+        ),
+      ),
+    ],
+  ),
+),
           
             ],
           ),

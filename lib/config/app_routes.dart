@@ -13,6 +13,7 @@ class AppRoutes {
   static const String menu_mission = '/menu_mission';
   static const String mission_affecte = '/mission_affecte';
   static const String historique_mission = '/historique_mission';
+  static const String missionDetailsPage = '/missionDetailsPage';
   static const String mission_modifie = '/mission_modifie';
   static const String modif_mission = '/modif_mission';
   static const String historique_ordre = '/historique_ordre';
@@ -29,13 +30,14 @@ class AppRoutes {
   static const String chauff_profilPage = '/chauff_profilPage';
   static const String chauff_profilModifie = '/chauff_profilModifie';
   static const String validerMissionChauff = '/validerMissionChauff';
+  static const String chauffMissionDetailsPage = '/chauffMissionDetailsPage';
   /////////////////////////// Ck ////////////////////////////////
   static const String cK = '/cK';
   static const String cK1 = '/cK1';
   static const String menu_ck = '/menu_ck';
   static const String ck_soumis =  '/ck_soumis';
   static const String historique_ck = '/historique_ck';
-  static const String ckDetailsPage= '/historique_ck';
+  static const String ckDetailsPage= '/ckDetailsPage';
 
   ///////////////////////////// Profil Page /////////////////////////////////
   static const String profil_page = '/profil_page';

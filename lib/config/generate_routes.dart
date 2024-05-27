@@ -6,6 +6,7 @@ import 'package:firstparc/Admin/Liste%20Perso/adminprofil_modifie.dart';
 import 'package:firstparc/Admin/Liste%20Perso/profil_pageAdmin.dart';
 import 'package:firstparc/Admin/Cr%C3%A9ation%20User/creation_user.dart';
 import 'package:firstparc/Admin/menuAdmin.dart';
+import 'package:firstparc/Chauffeur/chauffMissionDetailMission.dart';
 import 'package:firstparc/Chauffeur/chauff_mission.dart';
 import 'package:firstparc/Chauffeur/chauff_profilModifie.dart';
 import 'package:firstparc/Chauffeur/chauff_profilPage.dart';
@@ -26,6 +27,7 @@ import 'package:firstparc/M%C3%A9canicien/validermissionMec.dart';
 
 import 'package:firstparc/chef%20de%20parc/Mission/historique_mission.dart';
 import 'package:firstparc/chef%20de%20parc/Mission/menu_mission.dart';
+import 'package:firstparc/chef%20de%20parc/Mission/missionDetailsPage.dart';
 import 'package:firstparc/chef%20de%20parc/Mission/mission_affecte.dart';
 import 'package:firstparc/chef%20de%20parc/Mission/mission_form.dart';
 import 'package:firstparc/chef%20de%20parc/Mission/mission_modifie.dart';
@@ -96,6 +98,14 @@ class GenerateRoute {
        case AppRoutes.historique_mission:
        return MaterialPageRoute(builder: (context) => const HistoriqueMission());
 
+       case AppRoutes.missionDetailsPage:
+       final args = routeSettings.arguments as Map<String, dynamic>;
+       return MaterialPageRoute(builder: (context) =>  MissionDetailsPage(
+        mission: args['mission'],
+        missiona: args['missiona'],
+       
+       ));
+
        case AppRoutes.mission_modifie:
        return MaterialPageRoute(builder: (context) => const MissionModifie());
 
@@ -125,7 +135,7 @@ class GenerateRoute {
 
         case AppRoutes.chefprofil_modifie:
        return MaterialPageRoute(builder: (context) => const ChefProfilModifie());
-       ////////////      CHAUFFEUR    //////////////////////
+       //////////// /////////////////////////////////     CHAUFFEUR    ///////////////////////////////////////////////////////////////////////////
        case AppRoutes.menuChauffeur:
        return MaterialPageRoute(builder: (context) => const MenuChauffeur());
 
@@ -147,6 +157,15 @@ class GenerateRoute {
 
        case AppRoutes.validerMissionChauff:
        return MaterialPageRoute(builder: (context) =>  ValiderMissionChauff());
+
+       case AppRoutes.chauffMissionDetailsPage:
+       final args = routeSettings.arguments as Map<String, dynamic>;
+       return MaterialPageRoute(builder: (context) =>  ChauffMissionDetailsPage(
+        mission: args['mission'],
+        missiona: args['missiona'],
+       
+
+       ));
        
        
 

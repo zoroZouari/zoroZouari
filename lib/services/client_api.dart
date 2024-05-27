@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class ClientApi {
   
 
-  Future<List<String>> fetchClients() async {
+  Future<List<int>> fetchClients() async {
     try {
       
       final uri = Uri.parse('https://10.0.2.2:7116/api/Clients');
@@ -27,8 +27,8 @@ class ClientApi {
         final List<dynamic> jsonData = jsonDecode(response.body);
         List<Client> clientList = 
         jsonData.map((json) => Client.fromJson(json)).toList();
-        List<String> nomClient = clientList
-        .map((client) => client.intituleClient)
+        List<int> nomClient = clientList
+        .map((client) => client.codeCl)
         .toList();
         return nomClient;
       } else {
