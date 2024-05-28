@@ -32,7 +32,7 @@ class AdminProfilModifie extends StatelessWidget {
             SizedBox(height: 200),
             ElevatedButton(
               onPressed: (){
-                Navigator.pushNamed(context, AppRoutes.menuAdmin);
+                Navigator.pushNamed(context, AppRoutes.liste_chauffs);
 
               },
               style: ElevatedButton.styleFrom(

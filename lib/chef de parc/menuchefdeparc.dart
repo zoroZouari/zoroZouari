@@ -138,31 +138,6 @@ class _MenuChefDeParcState extends State<MenuChefDeParc> {
                           Navigator.pushNamed(context, AppRoutes.historique_ck);
                         },
                       ),
-
-                       CustomBox(
-                        icon: Icons.add_road_sharp,
-                        text: 'Mission',
-                        onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.mission_form);
-                        },
-                      ),
-
-                      CustomBox(
-                        icon: Icons.history,
-                        text: 'Historique Mission',
-                        onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.historique_mission);
-                        },
-                      ),
-
-                      CustomBox(
-                        icon: Icons.car_crash_outlined,
-                        text: 'Ordre Réparation',
-                        onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.historique_ordre);
-                        },
-                      ),
-                     
                     ],
                   ),
                 ),

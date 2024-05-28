@@ -24,6 +24,7 @@ import 'package:firstparc/M%C3%A9canicien/mec_mission.dart';
 import 'package:firstparc/M%C3%A9canicien/mecprofil_page.dart';
 import 'package:firstparc/M%C3%A9canicien/procederMission.dart';
 import 'package:firstparc/M%C3%A9canicien/validermissionMec.dart';
+import 'package:firstparc/Models/Utilisateur.dart';
 
 import 'package:firstparc/chef%20de%20parc/Mission/historique_mission.dart';
 import 'package:firstparc/chef%20de%20parc/Mission/menu_mission.dart';
@@ -40,7 +41,7 @@ import 'package:firstparc/chef%20de%20parc/ordre_rep/valider_ordre.dart';
 import 'package:firstparc/config/app_routes.dart';
 import 'package:firstparc/login/login_page.dart';
 import 'package:firstparc/chef%20de%20parc/chefprofil_page.dart';
-import 'package:firstparc/profil_page.dart';
+import 'package:firstparc/Admin/Liste%20Perso/profil_page.dart';
 import 'package:flutter/material.dart';
 
 class GenerateRoute {
@@ -211,10 +212,15 @@ class GenerateRoute {
 
        /////////////////////////////  Profil Page /////////////////////////////
        case AppRoutes.profil_page:
-       return MaterialPageRoute(builder: (context)=>   ProfilePage());
+       final chauffeur = routeSettings.arguments as Utilisateur;
+       return MaterialPageRoute(builder: (context)=>   ProfilePage(
+        chauffeur: chauffeur,
+       ),
+       );
        /////////////////////////////  Admin //////////////////////////////////   Admin
-       case AppRoutes.menuAdmin:
-       return MaterialPageRoute(builder: (context)=>  const  MenuAdmin());
+         case AppRoutes.menuAdmin:
+        final utilisateur = routeSettings.arguments as Utilisateur;
+        return MaterialPageRoute(builder: (context) => MenuAdmin(utilisateur: utilisateur));
 
        case AppRoutes.liste_chauffs:
        return MaterialPageRoute(builder: (context)=>  const  ListeChauffs());

@@ -1,3 +1,4 @@
+import 'package:firstparc/Models/Utilisateur.dart';
 import 'package:firstparc/config/app_routes.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,6 @@ class CustomBox extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.4, // Définir la largeur à 40% de la largeur de l'écran
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -31,13 +31,15 @@ class CustomBox extends StatelessWidget {
           children: [
             Icon(icon, size: 60),
             SizedBox(height: 10),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            Flexible(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center, // Alignement du texte au centre
               ),
-              textAlign: TextAlign.center, // Alignement du texte au centre
             ),
           ],
         ),
@@ -47,7 +49,8 @@ class CustomBox extends StatelessWidget {
 }
 
 class MenuAdmin extends StatefulWidget {
-  const MenuAdmin({Key? key}) : super(key: key);
+  final Utilisateur utilisateur;
+  const MenuAdmin({Key? key, required this.utilisateur}) : super(key: key);
 
   @override
   _MenuAdminState createState() => _MenuAdminState();
@@ -93,8 +96,7 @@ class _MenuAdminState extends State<MenuAdmin> {
                           icon: Icon(Icons.edit), // icone de modif profil
                           onPressed: () {
                             // Action à effectuer lorsque l'icône de modification de profil est cliquée
-                            Navigator.pushNamed(context,
-                             AppRoutes.profil_page,);
+                            Navigator.pushNamed(context, AppRoutes.profil_page);
                           },
                         ),
                       ),
@@ -106,7 +108,7 @@ class _MenuAdminState extends State<MenuAdmin> {
                           icon: Icon(Icons.logout), // icone pour se déconnecter
                           onPressed: () {
                             // Action à effectuer lorsque l'icône de déconnexion est cliquée
-                             Navigator.pushNamed(context, AppRoutes.login_page);
+                            Navigator.pushNamed(context, AppRoutes.login_page);
                           },
                         ),
                       ),
@@ -114,41 +116,72 @@ class _MenuAdminState extends State<MenuAdmin> {
                   ),
                 ),
               Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomBox(
-                      icon: Icons.people_alt,
-                      text: 'Chauffeurs',
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.liste_chauffs);
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    CustomBox(
-                      icon: Icons.admin_panel_settings_outlined,
-                      text: 'Chefs de Parcs',
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.liste_chefs);
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    CustomBox(
-                      icon: Icons.build_circle_outlined,
-                      text: 'Mécaniciens',
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.liste_mecs);
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    CustomBox(
-                      icon: Icons.person_add_alt_1_outlined,
-                      text: 'Création Utilisateurs',
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.creation_user);
-                      },
-                    ),
-                  ],
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8, // Limiter la largeur de la grille
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
+                    shrinkWrap: true, // Important to use this to limit the grid's height
+                    children: [
+                      CustomBox(
+                        icon: Icons.people_alt,
+                        text: 'Chauffeurs',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.liste_chauffs);
+                        },
+                      ),
+                      CustomBox(
+                        icon: Icons.admin_panel_settings_outlined,
+                        text: 'Chefs de Parcs',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.liste_chefs);
+                        },
+                      ),
+                      CustomBox(
+                        icon: Icons.build_circle_outlined,
+                        text: 'Mécaniciens',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.liste_mecs);
+                        },
+                      ),
+                      CustomBox(
+                        icon: Icons.person_add_alt_1_outlined,
+                        text: 'Création Utilisateurs',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.creation_user);
+                        },
+                      ),
+                      CustomBox(
+                        icon: Icons.add_road_sharp,
+                        text: 'Mission',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.creation_user);
+                        },
+                      ),
+                      CustomBox(
+                        icon: Icons.history,
+                        text: 'Historique Mission',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.historique_mission);
+                        },
+                      ),
+                      CustomBox(
+                        icon: Icons.car_crash_outlined,
+                        text: 'Ordre Réparation',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.historique_ordre);
+                        },
+                      ),
+                      CustomBox(
+                        icon: Icons.history,
+                        text: 'Historique Check List',
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.historique_ck);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
