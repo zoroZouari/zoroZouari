@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:firstparc/config/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class CreationUser extends StatefulWidget {
   const CreationUser({Key? key}) : super(key: key);
@@ -10,11 +12,44 @@ class CreationUser extends StatefulWidget {
 
 class _CreationUserState extends State<CreationUser> {
   final _formKey = GlobalKey<FormState>();
+  String? _nom, _prenom, _login, _motDePasse;
+  int? _codeDroit;
 
-  String? _nom, _prenom, _numeroTel, _email, _motDePasse;
-  bool _isChauffeur = false,
-      _isMecanicien = false,
-      _isChefDeParc = false; // Initialize checkbox values
+  // Future<void> _createUser() async {
+  //   final url = Uri.parse('http://10.0.2.2:7116/api/Utilisateurs'); // Remplacez par l'URL de votre API
+  //   print(url);
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //       body: jsonEncode(<String, dynamic>{
+          
+  //         'nomUser': _nom,
+  //         'prenomUser': _prenom,
+  //         'loginUser': _login,
+  //         'motPassUser': _motDePasse,
+  //         'codeDroit': _codeDroit,
+  //       }),
+  //     );
+
+  //     if (response.statusCode == 201) {
+  //       print(response.body);
+  //       Navigator.pushNamed(context, '/menuAdmin'); // Assurez-vous que vous avez configuré cette route
+  //     } else {
+  //       // Gérer l'erreur de requête HTTP
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Échec de la création de l\'utilisateur. Code: ${response.statusCode}')),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     // Gérer les erreurs de connexion
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Erreur de connexion : $e')),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +73,6 @@ class _CreationUserState extends State<CreationUser> {
             key: _formKey,
             child: Column(
               children: [
-                // TextFormField widgets for user input
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Nom',
@@ -75,7 +109,7 @@ class _CreationUserState extends State<CreationUser> {
                 ),
                 TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Numéro de téléphone',
+                    labelText: 'Code Droit',
                     labelStyle: TextStyle(
                       color: Color(0xFF112F33),
                       fontSize: 20,
@@ -84,15 +118,15 @@ class _CreationUserState extends State<CreationUser> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
+                      return 'Please enter your code droit';
                     }
                     return null;
                   },
-                  onSaved: (value) => _numeroTel = value,
+                  onSaved: (value) => _codeDroit = int.tryParse(value!),
                 ),
                 TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'E-mail',
+                    labelText: 'login',
                     labelStyle: TextStyle(
                       color: Color(0xFF112F33),
                       fontSize: 20,
@@ -100,12 +134,12 @@ class _CreationUserState extends State<CreationUser> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty || !value.contains('@')) {
-                      return 'Please enter a valid email';
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a valid login';
                     }
                     return null;
                   },
-                  onSaved: (value) => _email = value,
+                  onSaved: (value) => _login = value,
                 ),
                 TextFormField(
                   decoration: InputDecoration(
@@ -125,62 +159,6 @@ class _CreationUserState extends State<CreationUser> {
                   },
                   onSaved: (value) => _motDePasse = value,
                 ),
-
-                // CheckboxListTile for selecting user roles
-                CheckboxListTile(
-                  title: Text(
-                    'Chauffeur',
-                    style: TextStyle(
-                      color: Color(0xFF112F33),
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  value: _isChauffeur,
-                  onChanged: (value) {
-                    setState(() {
-                      _isChauffeur = value ?? false;
-                      _isMecanicien = false;
-                      _isChefDeParc = false;
-                    });
-                  },
-                ),
-                CheckboxListTile(
-                  title: Text(
-                    'Mécanicien',
-                    style: TextStyle(
-                      color: Color(0xFF112F33),
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  value: _isMecanicien,
-                  onChanged: (value) {
-                    setState(() {
-                      _isMecanicien = value ?? false;
-                      _isChauffeur = false;
-                      _isChefDeParc = false;
-                    });
-                  },
-                ),
-                CheckboxListTile(
-                  title: Text(
-                    'Chef de parc',
-                    style: TextStyle(
-                      color: Color(0xFF112F33),
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  value: _isChefDeParc,
-                  onChanged: (value) {
-                    setState(() {
-                      _isChefDeParc = value ?? false;
-                      _isChauffeur = false;
-                      _isMecanicien = false;
-                    });
-                  },
-                ),
                 SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -189,8 +167,8 @@ class _CreationUserState extends State<CreationUser> {
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
                           _formKey.currentState?.save();
-                          // Call API or perform other actions with the form data
-                          Navigator.pushNamed(context, AppRoutes.user_cree);
+                         // _createUser(); // Appelez la fonction pour créer l'utilisateur
+                         Navigator.pushNamed(context, AppRoutes.menuAdmin);
                         }
                       },
                       style: ElevatedButton.styleFrom(

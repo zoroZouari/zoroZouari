@@ -4,16 +4,16 @@ import 'package:firstparc/services/Utilisateur_api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class ProfilePageAdmin extends StatefulWidget {
-  final Utilisateur? admin;
+class ProfilePageMec extends StatefulWidget {
+  final Utilisateur? mec;
 
-  ProfilePageAdmin({Key? key, this.admin}) : super(key: key);
+  ProfilePageMec({Key? key, this.mec}) : super(key: key);
 
   @override
-  _ProfilePageAdminState createState() => _ProfilePageAdminState();
+  _ProfilePageMecState createState() => _ProfilePageMecState();
 }
 
-class _ProfilePageAdminState extends State<ProfilePageAdmin> {
+class _ProfilePageMecState extends State<ProfilePageMec> {
   final _prenomUserController = TextEditingController();
   final _nomUserController = TextEditingController();
   final _loginUserController = TextEditingController();
@@ -22,11 +22,11 @@ class _ProfilePageAdminState extends State<ProfilePageAdmin> {
   @override
   void initState() {
     super.initState();
-    if (widget.admin != null) {
-      _prenomUserController.text = widget.admin!.prenomUser;
-      _nomUserController.text = widget.admin!.nomUser;
-      _loginUserController.text = widget.admin!.loginUser;
-      _motPassUserController.text = widget.admin!.motPassUser;
+    if (widget.mec != null) {
+      _prenomUserController.text = widget.mec!.prenomUser;
+      _nomUserController.text = widget.mec!.nomUser;
+      _loginUserController.text = widget.mec!.loginUser;
+      _motPassUserController.text = widget.mec!.motPassUser;
     }
   }
 
@@ -50,7 +50,7 @@ class _ProfilePageAdminState extends State<ProfilePageAdmin> {
     );
 
     if (response.statusCode == 204) {
-      Navigator.pushNamed(context, AppRoutes.liste_admins);
+      Navigator.pushNamed(context, AppRoutes.liste_mecs);
       return true; // Suppression réussie
     } else {
       print('Erreur lors de la suppression - StatusCode: ${response.statusCode}');
@@ -141,12 +141,12 @@ class _ProfilePageAdminState extends State<ProfilePageAdmin> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        if(widget.admin != null) {
+                        if(widget.mec != null) {
                         final updatedUtilisateur = Utilisateur(
-                          codeUser: widget.admin!.codeUser,
+                          codeUser: widget.mec!.codeUser,
                           loginUser: _loginUserController.text,
                           motPassUser: _motPassUserController.text,
-                          codeDroit: widget.admin!.codeDroit,
+                          codeDroit: widget.mec!.codeDroit,
                           nomUser: _nomUserController.text,
                           prenomUser: _prenomUserController.text,
                         );
@@ -179,7 +179,7 @@ class _ProfilePageAdminState extends State<ProfilePageAdmin> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                       deleteUtilisateur(widget.admin!.codeUser);
+                       deleteUtilisateur(widget.mec!.codeUser);
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.red,

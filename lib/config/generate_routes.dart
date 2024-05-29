@@ -1,10 +1,13 @@
 import 'package:firstparc/Admin/Cr%C3%A9ation%20User/user_cree.dart';
+import 'package:firstparc/Admin/Liste%20Perso/liste_admins.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_chauffs.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_chefs.dart';
 import 'package:firstparc/Admin/Liste%20Perso/liste_mecs.dart';
-import 'package:firstparc/Admin/Liste%20Perso/adminprofil_modifie.dart';
+import 'package:firstparc/Admin/Liste%20Perso/profil_modifie.dart';
 import 'package:firstparc/Admin/Liste%20Perso/profil_pageAdmin.dart';
 import 'package:firstparc/Admin/Cr%C3%A9ation%20User/creation_user.dart';
+import 'package:firstparc/Admin/Liste%20Perso/profil_pageChef.dart';
+import 'package:firstparc/Admin/Liste%20Perso/profil_pageMec.dart';
 import 'package:firstparc/Admin/menuAdmin.dart';
 import 'package:firstparc/Chauffeur/chauffMissionDetailMission.dart';
 import 'package:firstparc/Chauffeur/chauff_mission.dart';
@@ -41,7 +44,7 @@ import 'package:firstparc/chef%20de%20parc/ordre_rep/valider_ordre.dart';
 import 'package:firstparc/config/app_routes.dart';
 import 'package:firstparc/login/login_page.dart';
 import 'package:firstparc/chef%20de%20parc/chefprofil_page.dart';
-import 'package:firstparc/Admin/Liste%20Perso/profil_page.dart';
+import 'package:firstparc/Admin/Liste%20Perso/profil_pageChauff.dart';
 import 'package:flutter/material.dart';
 
 class GenerateRoute {
@@ -211,15 +214,11 @@ class GenerateRoute {
         );
 
        /////////////////////////////  Profil Page /////////////////////////////
-       case AppRoutes.profil_page:
-       final chauffeur = routeSettings.arguments as Utilisateur;
-       return MaterialPageRoute(builder: (context)=>   ProfilePage(
-        chauffeur: chauffeur,
-       ),
-       );
+       
        /////////////////////////////  Admin //////////////////////////////////   Admin
          case AppRoutes.menuAdmin:
-        final utilisateur = routeSettings.arguments as Utilisateur;
+        final utilisateur = routeSettings.arguments as Utilisateur?;
+        
         return MaterialPageRoute(builder: (context) => MenuAdmin(utilisateur: utilisateur));
 
        case AppRoutes.liste_chauffs:
@@ -229,16 +228,41 @@ class GenerateRoute {
        return MaterialPageRoute(builder: (context)=>  const   ListeChefs());
 
        case AppRoutes.liste_mecs:
-       return MaterialPageRoute(builder: (context)=>  const  ListeMecs());
+       return MaterialPageRoute(builder: (context)=>   const ListeMecs());
+
+       case AppRoutes.liste_admins:
+       return MaterialPageRoute(builder: (context)=>   const ListeAdmins());
 
        case AppRoutes.creation_user:
        return MaterialPageRoute(builder: (context)=>   const CreationUser());
 
+       case AppRoutes.profil_pageChauff:
+       final chauffeur = routeSettings.arguments as Utilisateur;
+       return MaterialPageRoute(builder: (context)=>   ProfilePageChauff(
+        chauffeur: chauffeur,
+       ),
+       );
+       
        case AppRoutes.profil_pageAdmin:
-       return MaterialPageRoute(builder: (context)=>    ProfilePageAdmin());
+              final admin = routeSettings.arguments as Utilisateur;
+       return MaterialPageRoute(builder: (context)=>    ProfilePageAdmin(
+                admin: admin,
+       ));
 
-       case AppRoutes.adminprofil_modifie:
-       return MaterialPageRoute(builder: (context)=>   const AdminProfilModifie());
+       case AppRoutes.profil_pageChef:
+       final chef = routeSettings.arguments as Utilisateur;
+       return MaterialPageRoute(builder: (context)=>    ProfilePageChef(
+        chef: chef,
+       ));
+
+       case AppRoutes.profil_pageMec:
+           final mec = routeSettings.arguments as Utilisateur;
+       return MaterialPageRoute(builder: (context)=>    ProfilePageMec(
+            mec: mec,
+       ));
+
+       case AppRoutes.profil_modifie:
+       return MaterialPageRoute(builder: (context)=>   ProfilModifie());
 
        case AppRoutes.user_cree:
        return MaterialPageRoute(builder: (context)=>   const UserCree());

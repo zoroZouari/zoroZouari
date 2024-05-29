@@ -67,7 +67,7 @@ class _ListeChauffsState extends State<ListeChauffs> {
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
-                        AppRoutes.profil_page,
+                        AppRoutes.profil_pageChauff,
                         arguments: chauffeur, // Passez l'objet Utilisateur complet
                       );
                     },

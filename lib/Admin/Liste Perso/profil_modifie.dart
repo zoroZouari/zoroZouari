@@ -3,8 +3,8 @@ import 'package:firstparc/config/app_routes.dart';
 import 'package:flutter/material.dart';
 
 
-class AdminProfilModifie extends StatelessWidget {
-  const AdminProfilModifie({super.key});
+class ProfilModifie extends StatelessWidget {
+  const ProfilModifie({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class AdminProfilModifie extends StatelessWidget {
             SizedBox(height: 200),
             ElevatedButton(
               onPressed: (){
-                Navigator.pushNamed(context, AppRoutes.liste_chauffs);
+                Navigator.pushNamed(context, AppRoutes.menuAdmin);
 
               },
               style: ElevatedButton.styleFrom(

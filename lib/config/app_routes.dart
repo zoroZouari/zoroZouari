@@ -39,17 +39,21 @@ class AppRoutes {
   static const String historique_ck = '/historique_ck';
   static const String ckDetailsPage= '/ckDetailsPage';
 
-  ///////////////////////////// Profil Page /////////////////////////////////
-  static const String profil_page = '/profil_page';
+
+  
 
   ////////////////////////////   Admin //////////////////////////////////////// 
   static const String menuAdmin = '/menuAdmin';
   static const String liste_chauffs = '/liste_chauffs';
   static const String liste_chefs = '/liste_chefs';
   static const String liste_mecs = '/liste_mecs';
+  static const String liste_admins = '/liste_admins';
   static const String creation_user = '/creation_user';
   static const String profil_pageAdmin = '/profil_pageAdmin';
-  static const String adminprofil_modifie = '/adminprofil_modifie';
+  static const String profil_pageChef = '/profil_pageChef';
+  static const String profil_pageMec = '/profil_pageMec';
+  static const String profil_pageChauff = '/profil_pageChauff';
+  static const String profil_modifie = '/profil_modifie';
   static const String user_cree = '/user_cree';
   ///////////////////////////////    Mécanicien /////////////////////////////////////////    Mécanicien 
   static const String mec_mission = '/mec_mission';

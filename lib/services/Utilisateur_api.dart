@@ -29,7 +29,7 @@ class UtilisateurApi {
       return null;
     }
   }
-//////////////////////////////////   CHAUFFEUR ///////////////////////////////////////////////////
+//////////////////////////////////    AFFICHER LISTE CHAUFFEUR ///////////////////////////////////////////////////
   static Future<List<Utilisateur>?> fetchChauffeurs() async {
     final url = Uri.parse('https://10.0.2.2:7116/api/Utilisateurs');
 
@@ -56,7 +56,7 @@ class UtilisateurApi {
       return null;
     }
   }
-
+ ////////////////////////////////// UPDATE UTILISATEUR //////////////////////////////////////
 static Future<Utilisateur?> updateUtilisateur(Utilisateur utilisateur) async {
   final url = Uri.parse('https://10.0.2.2:7116/api/Utilisateurs/${utilisateur.codeUser}');
 
@@ -92,7 +92,7 @@ static Future<Utilisateur?> updateUtilisateur(Utilisateur utilisateur) async {
 }
 
 
-
+//////////////////////////////////// Supprimer UTILISATEUR /////////////////////////////////////////
    Future<bool> deleteUtilisateur(int codeUser) async {
   final url = Uri.parse('https://10.0.2.2:7116/api/Utilisateurs/$codeUser');
 
@@ -115,8 +115,88 @@ static Future<Utilisateur?> updateUtilisateur(Utilisateur utilisateur) async {
     return false; // Erreur de connexion ou autre
   }
 }
-   
+//////////////////////////////////    AFFICHER LISTE CHEFS ///////////////////////////////////////////////////
+  static Future<List<Utilisateur>?> fetchChefs() async {
+    final url = Uri.parse('https://10.0.2.2:7116/api/Utilisateurs');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      });
+
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData = jsonDecode(response.body);
+        List<Utilisateur> chefs = responseData
+            .map((data) => Utilisateur.fromJson(data))
+            .where((user) => user.codeDroit == 2)
+            .toList();
+             for (var chef in chefs) {
+          print('Chauffeur: ${chef.codeUser}, ${chef.loginUser}, ${chef.nomUser}, ${chef.prenomUser}');
+             }
+        return chefs;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des chauffeurs : $e');
+      return null;
+    }
+  } 
+//////////////////////////////////    AFFICHER LISTE Admins ///////////////////////////////////////////////////
+  static Future<List<Utilisateur>?> fetchAdmins() async {
+    final url = Uri.parse('https://10.0.2.2:7116/api/Utilisateurs');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      });
+
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData = jsonDecode(response.body);
+        List<Utilisateur> admins = responseData
+            .map((data) => Utilisateur.fromJson(data))
+            .where((user) => user.codeDroit == 1)
+            .toList();
+             for (var admin in admins) {
+          print('Chauffeur: ${admin.codeUser}, ${admin.loginUser}, ${admin.nomUser}, ${admin.prenomUser}');
+             }
+        return admins;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des chauffeurs : $e');
+      return null;
+    }
+  }
 
 
+//////////////////////////////////    AFFICHER LISTE Mecanicien ///////////////////////////////////////////////////
+  static Future<List<Utilisateur>?> fetchMecs() async {
+    final url = Uri.parse('https://10.0.2.2:7116/api/Utilisateurs');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      });
+
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData = jsonDecode(response.body);
+        List<Utilisateur> mecs = responseData
+            .map((data) => Utilisateur.fromJson(data))
+            .where((user) => user.codeDroit == 4)
+            .toList();
+             for (var mec in mecs) {
+          print('Chauffeur: ${mec.codeUser}, ${mec.loginUser}, ${mec.nomUser}, ${mec.prenomUser}');
+             }
+        return mecs;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des chauffeurs : $e');
+      return null;
+    }
+  }
 
 }

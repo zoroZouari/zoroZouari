@@ -1,35 +1,35 @@
-import 'package:firstparc/Models/Utilisateur.dart';
-import 'package:firstparc/config/app_routes.dart';
 import 'package:firstparc/services/Utilisateur_api.dart';
 import 'package:flutter/material.dart';
+import 'package:firstparc/Models/Utilisateur.dart';
+import 'package:firstparc/config/app_routes.dart';
 
-class ListeChefs extends StatefulWidget {
-  const ListeChefs({super.key});
+class ListeAdmins extends StatefulWidget {
+  const ListeAdmins({Key? key});
 
   @override
-  State<ListeChefs> createState() => _ListeChefsState();
+  State<ListeAdmins> createState() => _ListeAdminsState();
 }
 
-class _ListeChefsState extends State<ListeChefs> {
+class _ListeAdminsState extends State<ListeAdmins> {
+  late Future<List<Utilisateur>?> _admins;
 
-late Future<List<Utilisateur>?> _chefs;
-
- @override
+  @override
   void initState() {
     super.initState();
-    _chefs = UtilisateurApi.fetchChefs();
+    _admins = UtilisateurApi.fetchAdmins();
   }
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
-        title: Text('Liste des Chefs de Parcs',
-        style: TextStyle(
-          color: Color(0xFF112F33), // Couleur du texte
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-        ),
+        title: Text(
+          'Liste des Admins',
+          style: TextStyle(
+            color: Color(0xFF112F33), // Couleur du texte
+            fontWeight: FontWeight.bold,
+            fontSize: 25,
+          ),
         ),
          actions: [
           IconButton(
@@ -41,8 +41,8 @@ late Future<List<Utilisateur>?> _chefs;
         ],
       ),
       backgroundColor: Color(0xFFDDECED), // Couleur de fond de l'interface
-       body: FutureBuilder<List<Utilisateur>?>(
-        future: _chefs,
+      body: FutureBuilder<List<Utilisateur>?>(
+        future: _admins,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -52,18 +52,18 @@ late Future<List<Utilisateur>?> _chefs;
             return Center(child: Text('Aucun chauffeur trouvé.'));
           }
 
-          final chefs = snapshot.data!;
+          final admins = snapshot.data!;
 
           return ListView.builder(
-            itemCount: chefs.length,
+            itemCount: admins.length,
             itemBuilder: (context, index) {
-              final chef = chefs[index];
+              final admin = admins[index];
               return Card(
                 color: Colors.white, // Couleur de fond de la carte
                 child: ListTile(
                   leading: Icon(Icons.people_alt), // Remplacement du texte par l'icône
                   title: Text(
-                    '${chef.prenomUser} ${chef.nomUser}', // Affiche le prénom et le nom
+                    '${admin.prenomUser} ${admin.nomUser}', // Affiche le prénom et le nom
                     style: TextStyle(
                       color: Color(0xFF112F33), // Couleur du texte
                       fontWeight: FontWeight.bold,
@@ -75,8 +75,8 @@ late Future<List<Utilisateur>?> _chefs;
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
-                        AppRoutes.profil_pageChef,
-                        arguments: chef, // Passez l'objet Utilisateur complet
+                        AppRoutes.profil_pageAdmin,
+                        arguments: admin, // Passez l'objet Utilisateur complet
                       );
                     },
                   ),
@@ -87,6 +87,5 @@ late Future<List<Utilisateur>?> _chefs;
         },
       ),
     );
-
   }
 }

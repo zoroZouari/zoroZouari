@@ -4,16 +4,16 @@ import 'package:firstparc/services/Utilisateur_api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class ProfilePage extends StatefulWidget {
-  final Utilisateur? chauffeur;
+class ProfilePageChef extends StatefulWidget {
+  final Utilisateur? chef;
 
-  ProfilePage({Key? key, this.chauffeur}) : super(key: key);
+  ProfilePageChef({Key? key, this.chef}) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfilePageChefState createState() => _ProfilePageChefState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageChefState extends State<ProfilePageChef> {
   final _prenomUserController = TextEditingController();
   final _nomUserController = TextEditingController();
   final _loginUserController = TextEditingController();
@@ -22,11 +22,11 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    if (widget.chauffeur != null) {
-      _prenomUserController.text = widget.chauffeur!.prenomUser;
-      _nomUserController.text = widget.chauffeur!.nomUser;
-      _loginUserController.text = widget.chauffeur!.loginUser;
-      _motPassUserController.text = widget.chauffeur!.motPassUser;
+    if (widget.chef != null) {
+      _prenomUserController.text = widget.chef!.prenomUser;
+      _nomUserController.text = widget.chef!.nomUser;
+      _loginUserController.text = widget.chef!.loginUser;
+      _motPassUserController.text = widget.chef!.motPassUser;
     }
   }
 
@@ -50,7 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     if (response.statusCode == 204) {
-      Navigator.pushNamed(context, AppRoutes.liste_chauffs);
+      Navigator.pushNamed(context, AppRoutes.liste_chefs);
       return true; // Suppression réussie
     } else {
       print('Erreur lors de la suppression - StatusCode: ${response.statusCode}');
@@ -141,12 +141,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        if(widget.chauffeur != null) {
+                        if(widget.chef != null) {
                         final updatedUtilisateur = Utilisateur(
-                          codeUser: widget.chauffeur!.codeUser,
+                          codeUser: widget.chef!.codeUser,
                           loginUser: _loginUserController.text,
                           motPassUser: _motPassUserController.text,
-                          codeDroit: widget.chauffeur!.codeDroit,
+                          codeDroit: widget.chef!.codeDroit,
                           nomUser: _nomUserController.text,
                           prenomUser: _prenomUserController.text,
                         );
@@ -154,7 +154,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         final success = await UtilisateurApi.updateUtilisateur(updatedUtilisateur);
 
                         if (success != null) {
-                          Navigator.pushNamed(context, AppRoutes.liste_chauffs);
+                          Navigator.pushNamed(context, AppRoutes.profil_modifie);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la mise à jour du profil')));
                         }
@@ -179,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                       deleteUtilisateur(widget.chauffeur!.codeUser);
+                       deleteUtilisateur(widget.chef!.codeUser);
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.red,

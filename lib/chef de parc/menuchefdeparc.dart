@@ -88,18 +88,6 @@ class _MenuChefDeParcState extends State<MenuChefDeParc> {
                   right: 0,
                   child: Column(
                     children: [
-                      SizedBox(height: 45),
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 20,
-                        child: IconButton(
-                          icon: Icon(Icons.edit), // icone de modif profil
-                          onPressed: () {
-                            // Action à effectuer lorsque l'icône de modification de profil est cliquée
-                            Navigator.pushNamed(context, AppRoutes.profil_page);
-                          },
-                        ),
-                      ),
                       SizedBox(height: 10),
                       CircleAvatar(
                         backgroundColor: Colors.white,
